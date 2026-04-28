@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPK Kelayakan Nasabah</title>
+    <link href="{{ asset('css/auth.css') }}" rel="stylesheet">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="neu-icon">
+                    <div class="icon-inner">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                    </div>
+                </div>
+                <h2>Welcome back</h2>
+                <p>Please sign in to continue</p>
+            </div>
+
+            {{-- 🔥 FORM LOGIN BENER --}}
+            <form class="login-form" id="loginForm" method="POST" action="{{ route('login.index') }}" novalidate>
+                @csrf
+
+                <div class="form-group">
+                    <div class="input-group neu-input">
+                        <input type="email" id="email" name="email" required autocomplete="email" placeholder=" ">
+                        <label for="email">Email address</label>
+                        <div class="input-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                <polyline points="22,6 12,13 2,6"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <span class="error-message" id="emailError"></span>
+                </div>
+
+                <div class="form-group">
+                    <div class="input-group neu-input password-group">
+                        <input type="password" id="password" name="password" required autocomplete="current-password" placeholder=" ">
+                        <label for="password">Password</label>
+                        <div class="input-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                                <path d="M7 11V7a5 5 0 0110 0v4"/>
+                            </svg>
+                        </div>
+                        <button type="button" class="password-toggle neu-toggle" id="passwordToggle">
+                            👁
+                        </button>
+                    </div>
+                    <span class="error-message" id="passwordError"></span>
+                </div>
+
+                <button type="submit" class="neu-button login-btn">
+                    <span class="btn-text">Sign In</span>
+                </button>
+            </form>
+
+            @if ($errors->any())
+                <p style="color:red;text-align:center;margin-top:1rem;">
+                    {{ $errors->first() }}
+                </p>
+            @endif
+        </div>
+    </div>
+
+    <script>
+        // 🔥 JS CUMA BUAT UI (TIDAK NGE-HANDLE LOGIN)
+        document.getElementById('passwordToggle').addEventListener('click', function () {
+            const password = document.getElementById('password');
+            password.type = password.type === 'password' ? 'text' : 'password';
+        });
+    </script>
+</body>
+</html>
