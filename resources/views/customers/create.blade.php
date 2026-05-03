@@ -3,15 +3,46 @@
 @section('content')
 <div class="card card-soft p-4">
     <!-- Header -->
-    <div class="d-flex align-items-center mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+    
+    <!-- Kiri: icon + title -->
+    <div class="d-flex align-items-center">
         <div class="icon-circle me-3">
-            <i class="fa-solid fa-user-plus"></i>
+            <i class="fa-solid fa-user-pen"></i>
         </div>
         <div>
-            <h4 class="mb-1 fw-bold">Tambah Nasabah Baru</h4>
-            <p class="text-muted mb-0 small">Masukkan informasi nasabah untuk sistem penilaian</p>
+            <h4 class="mb-1 fw-bold">Edit Data Nasabah</h4>
+            <p class="text-muted mb-0 small">Perbarui informasi nasabah yang sudah ada</p>
         </div>
     </div>
+
+    <!-- Kanan: semua tombol -->
+    <div class="d-flex gap-2">
+        <button type="submit" form="customerForm" class="btn btn-primary">
+            <i class="fa-solid fa-save me-1"></i> Simpan
+        </button>
+
+        <button type="reset" form="customerForm" class="btn btn-outline-secondary">
+            <i class="fa-solid fa-rotate-left me-1"></i> Reset
+        </button>
+
+        <a href="{{ route('customers.index') }}" class="btn btn-outline-secondary">
+            <i class="fa-solid fa-arrow-left me-1"></i> Kembali
+        </a>
+    </div>
+     {{-- <div class="d-flex gap-2 mt-4">
+            <button type="submit" class="btn btn-primary btn-lg">
+                <i class="fa-solid fa-save me-2"></i>Simpan Nasabah
+            </button>
+            <button type="reset" class="btn btn-outline-secondary btn-lg">
+                <i class="fa-solid fa-rotate-left me-2"></i>Reset Form
+            </button>
+            <a href="{{ route('customers.index') }}" class="btn btn-outline-secondary btn-lg">
+                <i class="fa-solid fa-arrow-left me-2"></i>Kembali
+            </a>
+        </div> --}}
+
+</div>
 
     <!-- Info Alert -->
     <div class="alert alert-info d-flex align-items-center mb-4">
@@ -19,7 +50,7 @@
         <div>
             <strong>Informasi:</strong> Field yang bertanda <span class="text-danger">*</span> wajib diisi.
             <br>
-            <small>Email dan nomor telepon bersifat opsional namun disarankan untuk dilengkapi.</small>
+            <small>Alamat dan Usaha bersifat opsional namun disarankan untuk dilengkapi.</small>
         </div>
     </div>
 
@@ -41,75 +72,39 @@
                        id="nameInput"
                        required>
                 <div class="form-text">
-                    <i class="fa-solid fa-lightbulb me-1"></i>Masukkan nama lengkap sesuai identitas
+                    Masukkan nama lengkap sesuai identitas
                 </div>
             </div>
 
-            <!-- Identifier -->
+            <!-- Alamat -->
             <div class="col-md-6">
                 <label class="form-label fw-semibold">
-                    <i class="fa-solid fa-id-card me-2"></i>Email
+                    <i class="fa-solid fa-house"></i></i>Alamat
                 </label>
                 <input type="text" 
                        name="identifier" 
                        class="form-control form-control-lg" 
-                       placeholder="Contoh: adinda@gmail.com"
+                       placeholder="Contoh: Panggang, Giriwungu"
                        id="identifierInput">
                 <div class="form-text">
-                    <i class="fa-solid fa-lightbulb me-1"></i>Email nasabah (opsional)
+                    Alamat nasabah (opsional)
                 </div>
             </div>
 
-            <!-- Nomor Telepon -->
+            <!-- Usaha -->
             <div class="col-md-6">
                 <label class="form-label fw-semibold">
-                    <i class="fa-solid fa-phone me-2"></i>Nomor Telepon
+                    <i class="fa-solid fa-briefcase"></i>Usaha
                 </label>
-                <input type="tel" 
+                <input type="text" 
                        name="phone" 
                        class="form-control form-control-lg" 
-                       placeholder="Contoh: 081234567890"
+                       placeholder="Contoh: Petani"
                        id="phoneInput">
                 <div class="form-text">
-                    <i class="fa-solid fa-lightbulb me-1"></i>Nomor telepon aktif untuk dihubungi (opsional)
+                    Usaha atau pekerjaan nasabah (opsional)
                 </div>
             </div>
-        </div>
-
-        <!-- Preview Card -->
-        <div class="mt-4">
-            <label class="form-label fw-semibold">
-                <i class="fa-solid fa-eye me-2"></i>Preview Data Nasabah
-            </label>
-            <div class="preview-card">
-                <div class="preview-avatar" id="previewAvatar">
-                    <i class="fa-solid fa-user"></i>
-                </div>
-                <div class="preview-content">
-                    <h5 class="mb-1" id="previewName">Nama Nasabah</h5>
-                    <div class="preview-details">
-                        <span class="preview-item" id="previewIdentifier">
-                            <i class="fa-solid fa-id-card me-1"></i>-
-                        </span>
-                        <span class="preview-item" id="previewPhone">
-                            <i class="fa-solid fa-phone me-1"></i>-
-                        </span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Buttons -->
-        <div class="d-flex gap-2 mt-4">
-            <button type="submit" class="btn btn-primary btn-lg">
-                <i class="fa-solid fa-save me-2"></i>Simpan Nasabah
-            </button>
-            <button type="reset" class="btn btn-outline-secondary btn-lg">
-                <i class="fa-solid fa-rotate-left me-2"></i>Reset Form
-            </button>
-            <a href="{{ route('customers.index') }}" class="btn btn-outline-secondary btn-lg">
-                <i class="fa-solid fa-arrow-left me-2"></i>Kembali
-            </a>
         </div>
     </form>
 </div>
@@ -152,60 +147,6 @@
     margin-top: 0.5rem;
 }
 
-/* Preview Card */
-.preview-card {
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(99, 102, 241, 0.1));
-    border: 2px solid var(--primary);
-    border-radius: 16px;
-    padding: 2rem;
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-    transition: all 0.3s ease;
-}
-
-.preview-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
-}
-
-.preview-avatar {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--primary), var(--accent));
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2rem;
-    font-weight: bold;
-    flex-shrink: 0;
-}
-
-.preview-content {
-    flex: 1;
-}
-
-.preview-content h5 {
-    color: var(--primary);
-    font-weight: 700;
-}
-
-.preview-details {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    margin-top: 0.5rem;
-}
-
-.preview-item {
-    font-size: 0.875rem;
-    color: #6c757d;
-    display: flex;
-    align-items: center;
-}
-
 /* Buttons */
 .btn-lg {
     padding: 0.75rem 2rem;
@@ -227,22 +168,6 @@
         font-size: 1.25rem;
     }
     
-    .preview-card {
-        flex-direction: column;
-        text-align: center;
-        padding: 1.5rem;
-    }
-    
-    .preview-avatar {
-        width: 64px;
-        height: 64px;
-        font-size: 1.5rem;
-    }
-    
-    .preview-details {
-        justify-content: center;
-    }
-    
     .d-flex.gap-2 {
         flex-direction: column;
     }
@@ -259,51 +184,6 @@
 const nameInput = document.getElementById('nameInput');
 const identifierInput = document.getElementById('identifierInput');
 const phoneInput = document.getElementById('phoneInput');
-
-// Preview elements
-const previewName = document.getElementById('previewName');
-const previewIdentifier = document.getElementById('previewIdentifier');
-const previewPhone = document.getElementById('previewPhone');
-const previewAvatar = document.getElementById('previewAvatar');
-
-// Update preview name
-nameInput.addEventListener('input', function() {
-    const name = this.value.trim();
-    if (name) {
-        previewName.textContent = name;
-        previewAvatar.textContent = name.charAt(0).toUpperCase();
-    } else {
-        previewName.textContent = 'Nama Nasabah';
-        previewAvatar.innerHTML = '<i class="fa-solid fa-user"></i>';
-    }
-});
-
-// Update preview identifier
-identifierInput.addEventListener('input', function() {
-    const identifier = this.value.trim();
-    previewIdentifier.innerHTML = identifier 
-        ? `<i class="fa-solid fa-id-card me-1"></i>${identifier}` 
-        : '<i class="fa-solid fa-id-card me-1"></i>-';
-});
-
-// Update preview phone
-phoneInput.addEventListener('input', function() {
-    let phone = this.value.trim();
-    
-    // Format phone number (optional)
-    phone = phone.replace(/\D/g, '');
-    
-    previewPhone.innerHTML = phone 
-        ? `<i class="fa-solid fa-phone me-1"></i>${phone}` 
-        : '<i class="fa-solid fa-phone me-1"></i>-';
-});
-
-// Phone number validation (only allow numbers)
-phoneInput.addEventListener('keypress', function(e) {
-    if (!/[0-9]/.test(e.key) && e.key !== 'Backspace') {
-        e.preventDefault();
-    }
-});
 
 // Form validation
 document.getElementById('customerForm').addEventListener('submit', function(e) {

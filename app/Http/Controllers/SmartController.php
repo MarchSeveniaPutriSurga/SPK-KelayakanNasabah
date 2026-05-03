@@ -108,6 +108,23 @@ class SmartController extends Controller
             }
         }
 
+        $maxScore = $results[0]['total'] ?? 1;
+
+        foreach ($results as &$r) {
+            // ambil nilai pengajuan dari evaluation / atau langsung dari customer kalau ada
+            $pengajuan = Evaluation::where('customer_id', $r['customer']->id)
+                ->where('period_id', $selected)
+                ->whereHas('criterion', fn($q) => $q->name == 'pengajuan')
+                ->value('real_value') ?? 0;
+
+            $ratio = $r['total'] / $maxScore;
+
+            $rekomendasi = $ratio * $pengajuan;
+
+            // optional: pembulatan
+            $r['rekomendasi'] = round($rekomendasi);
+        }
+
         return view('smart.index', compact('periods', 'criteria', 'results', 'selected'));
     }
 }

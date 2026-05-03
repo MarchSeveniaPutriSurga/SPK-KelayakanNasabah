@@ -73,6 +73,7 @@
             <th width="160" class="text-center">
               <i class="fa-solid fa-circle-check me-1"></i>Status
             </th>
+            <th>Rekomendasi Pencairan</th>
           </tr>
         </thead>
         <tbody>
@@ -134,6 +135,9 @@
                   @else
                     <span class="badge bg-secondary">-</span>
                   @endif
+                </td>
+                <td>
+                    Rp {{ number_format($r['rekomendasi'], 0, ',', '.') }}
                 </td>
               </tr>
             @endforeach

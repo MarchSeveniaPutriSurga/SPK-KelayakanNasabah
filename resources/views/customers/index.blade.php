@@ -26,7 +26,7 @@
                 <input type="text" 
                        class="form-control form-control-lg ps-5" 
                        id="searchInput" 
-                       placeholder="Cari nasabah berdasarkan nama, email, atau nomor telepon...">
+                       placeholder="Cari nasabah berdasarkan nama, alamat, atau usaha...">
             </div>
         </div>
         <div class="col-md-4">
@@ -54,42 +54,6 @@
             </div>
         </div>
     @else
-        <!-- Stats Cards -->
-        <div class="row g-3 mb-4">
-            <div class="col-md-4">
-                <div class="stat-card-modern">
-                    <div class="stat-icon bg-primary-subtle">
-                        <i class="fa-solid fa-users text-primary"></i>
-                    </div>
-                    <div class="stat-content">
-                        <h3 class="mb-0">{{ $customers->count() }}</h3>
-                        <small class="text-muted">Total Nasabah</small>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="stat-card-modern">
-                    <div class="stat-icon bg-success-subtle">
-                        <i class="fa-solid fa-phone text-success"></i>
-                    </div>
-                    <div class="stat-content">
-                        <h3 class="mb-0">{{ $customers->filter(fn($c) => $c->phone)->count() }}</h3>
-                        <small class="text-muted">Dengan Telepon</small>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="stat-card-modern">
-                    <div class="stat-icon bg-info-subtle">
-                        <i class="fa-solid fa-id-card text-info"></i>
-                    </div>
-                    <div class="stat-content">
-                        <h3 class="mb-0">{{ $customers->filter(fn($c) => $c->identifier)->count() }}</h3>
-                        <small class="text-muted">Dengan Email</small>
-                    </div>
-                </div>
-            </div>
-        </div>
 
         <!-- Table -->
         <div class="table-responsive">
@@ -101,10 +65,10 @@
                             <i class="fa-solid fa-user me-1"></i>Nama Nasabah
                         </th>
                         <th width="200">
-                            <i class="fa-solid fa-id-card me-1"></i>Email
+                            <i class="fa-solid fa-house"></i> Alamat
                         </th>
                         <th width="180">
-                            <i class="fa-solid fa-phone me-1"></i>Telepon
+                            <i class="fa-solid fa-briefcase"></i> Usaha
                         </th>
                         <th width="150" class="text-center">
                             <i class="fa-solid fa-cog me-1"></i>Aksi
@@ -131,23 +95,22 @@
                         <td>
                             @if($c->identifier)
                                 <span class="badge bg-light text-dark">
-                                    <i class="fa-solid fa-hashtag me-1"></i>{{ $c->identifier }}
+                                    {{ $c->identifier }}
                                 </span>
                             @else
-                                <span class="text-muted small">
-                                    <i class="fa-solid fa-minus"></i> Tidak ada
+                                <span class="text-muted small d-inline-flex align-items-center justify-content-center">
+                                    <i class="fa-solid fa-minus"></i>
                                 </span>
                             @endif
                         </td>
                         <td>
                             @if($c->phone)
-                                <a href="tel:{{ $c->phone }}" class="text-decoration-none">
-                                    <i class="fa-solid fa-phone-volume me-1 text-success"></i>
+                                <span class="badge bg-light text-dark">
                                     {{ $c->phone }}
-                                </a>
+                                </span>
                             @else
-                                <span class="text-muted small">
-                                    <i class="fa-solid fa-phone-slash me-1"></i> Tidak ada
+                                <span class="text-muted small d-inline-flex align-items-center justify-content-center">
+                                    <i class="fa-solid fa-minus"></i>
                                 </span>
                             @endif
                         </td>
