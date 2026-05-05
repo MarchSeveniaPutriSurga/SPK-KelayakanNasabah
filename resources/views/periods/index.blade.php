@@ -136,33 +136,6 @@
                 </tbody>
             </table>
         </div>
-
-        <!-- Summary Footer -->
-        <div class="mt-4 p-3 bg-light rounded">
-            <div class="row text-center">
-                <div class="col-md-4">
-                    <div class="stat-card">
-                        <i class="fa-solid fa-calendar-days text-primary fs-3 mb-2"></i>
-                        <h5 class="mb-0">{{ $periods->count() }}</h5>
-                        <small class="text-muted">Total Periode</small>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="stat-card">
-                        <i class="fa-solid fa-check-circle text-success fs-3 mb-2"></i>
-                        <h5 class="mb-0">{{ $periods->where('is_active', true)->count() }}</h5>
-                        <small class="text-muted">Periode Aktif</small>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="stat-card">
-                        <i class="fa-solid fa-calendar-xmark text-secondary fs-3 mb-2"></i>
-                        <h5 class="mb-0">{{ $periods->where('is_active', false)->count() }}</h5>
-                        <small class="text-muted">Periode Nonaktif</small>
-                    </div>
-                </div>
-            </div>
-        </div>
     @endif
 </div>
 
@@ -226,18 +199,6 @@
 .period-row:hover {
     background-color: rgba(99, 102, 241, 0.05);
     transform: translateX(2px);
-}
-
-/* Stat Card */
-.stat-card {
-    padding: 1rem;
-    border-radius: 8px;
-    transition: all 0.2s ease;
-}
-
-.stat-card:hover {
-    background: white;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
 /* Empty State */

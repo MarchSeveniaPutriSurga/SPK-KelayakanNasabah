@@ -5,44 +5,32 @@
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
     
-    <!-- Kiri: icon + title -->
-    <div class="d-flex align-items-center">
-        <div class="icon-circle me-3">
-            <i class="fa-solid fa-user-pen"></i>
+        <!-- Kiri: icon + title -->
+        <div class="d-flex align-items-center">
+            <div class="icon-circle me-3">
+                <i class="fa-solid fa-user-pen"></i>
+            </div>
+            <div>
+                <h4 class="mb-1 fw-bold">Edit Data Nasabah</h4>
+                <p class="text-muted mb-0 small">Perbarui informasi nasabah yang sudah ada</p>
+            </div>
         </div>
-        <div>
-            <h4 class="mb-1 fw-bold">Edit Data Nasabah</h4>
-            <p class="text-muted mb-0 small">Perbarui informasi nasabah yang sudah ada</p>
-        </div>
-    </div>
 
-    <!-- Kanan: semua tombol -->
-    <div class="d-flex gap-2">
-        <button type="submit" form="customerForm" class="btn btn-primary">
-            <i class="fa-solid fa-save me-1"></i> Simpan
-        </button>
-
-        <button type="reset" form="customerForm" class="btn btn-outline-secondary">
-            <i class="fa-solid fa-rotate-left me-1"></i> Reset
-        </button>
-
-        <a href="{{ route('customers.index') }}" class="btn btn-outline-secondary">
-            <i class="fa-solid fa-arrow-left me-1"></i> Kembali
-        </a>
-    </div>
-     {{-- <div class="d-flex gap-2 mt-4">
-            <button type="submit" class="btn btn-primary btn-lg">
-                <i class="fa-solid fa-save me-2"></i>Simpan Nasabah
+        <!-- Kanan: semua tombol -->
+        <div class="d-flex gap-2">
+            <button type="submit" form="customerForm" class="btn btn-primary">
+                <i class="fa-solid fa-save me-1"></i> Simpan
             </button>
-            <button type="reset" class="btn btn-outline-secondary btn-lg">
-                <i class="fa-solid fa-rotate-left me-2"></i>Reset Form
+
+            <button type="reset" form="customerForm" class="btn btn-outline-secondary">
+                <i class="fa-solid fa-rotate-left me-1"></i> Reset
             </button>
-            <a href="{{ route('customers.index') }}" class="btn btn-outline-secondary btn-lg">
-                <i class="fa-solid fa-arrow-left me-2"></i>Kembali
+
+            <a href="{{ route('customers.index') }}" class="btn btn-outline-secondary">
+                <i class="fa-solid fa-arrow-left me-1"></i> Kembali
             </a>
-        </div> --}}
-
-</div>
+        </div>
+    </div>
 
     <!-- Info Alert -->
     <div class="alert alert-info d-flex align-items-center mb-4">

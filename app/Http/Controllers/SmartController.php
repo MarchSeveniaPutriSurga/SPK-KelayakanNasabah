@@ -56,6 +56,39 @@ class SmartController extends Controller
         }
 
         // --- 2. Normalisasi & weighted ---
+        // foreach ($customers as $cust) {
+        //     $detail = [];
+        //     $total = 0;
+
+        //     foreach ($criteria as $c) {
+        //         $raw = $rawMatrix[$c->id][$cust->id] ?? 0;
+        //         $columnValues = array_values($rawMatrix[$c->id]);
+
+        //         if ($c->type === 'benefit') {
+        //             $maxVal = max($columnValues);
+        //             $norm = $maxVal > 0 ? $raw / $maxVal : 0;
+        //         } else { // cost
+        //             $minVal = min($columnValues);
+        //             $norm = $raw > 0 ? $minVal / $raw : 0;
+        //         }
+
+        //         $weighted = $norm * $c->weight;
+
+        //         $detail[$c->id] = [
+        //             'raw' => $raw,
+        //             'norm' => round($norm, 4),
+        //             'weighted' => round($weighted, 4),
+        //         ];
+
+        //         $total += $weighted;
+        //     }
+
+        //     $results[] = [
+        //         'customer' => $cust,
+        //         'detail' => $detail,
+        //         'total' => round($total, 4),
+        //     ];
+        // }
         foreach ($customers as $cust) {
             $detail = [];
             $total = 0;
@@ -64,13 +97,9 @@ class SmartController extends Controller
                 $raw = $rawMatrix[$c->id][$cust->id] ?? 0;
                 $columnValues = array_values($rawMatrix[$c->id]);
 
-                if ($c->type === 'benefit') {
-                    $maxVal = max($columnValues);
-                    $norm = $maxVal > 0 ? $raw / $maxVal : 0;
-                } else { // cost
-                    $minVal = min($columnValues);
-                    $norm = $raw > 0 ? $minVal / $raw : 0;
-                }
+                // FIX: semua dianggap benefit
+                $maxVal = max($columnValues);
+                $norm = $maxVal > 0 ? $raw / $maxVal : 0;
 
                 $weighted = $norm * $c->weight;
 
@@ -111,17 +140,18 @@ class SmartController extends Controller
         $maxScore = $results[0]['total'] ?? 1;
 
         foreach ($results as &$r) {
-            // ambil nilai pengajuan dari evaluation / atau langsung dari customer kalau ada
+
             $pengajuan = Evaluation::where('customer_id', $r['customer']->id)
                 ->where('period_id', $selected)
-                ->whereHas('criterion', fn($q) => $q->name == 'pengajuan')
+                ->whereHas('criterion', function ($q) {
+                    $q->where('name', 'like', '%pengajuan%');
+                })
                 ->value('real_value') ?? 0;
 
-            $ratio = $r['total'] / $maxScore;
+            $ratio = $maxScore > 0 ? $r['total'] / $maxScore : 0;
 
             $rekomendasi = $ratio * $pengajuan;
 
-            // optional: pembulatan
             $r['rekomendasi'] = round($rekomendasi);
         }
 

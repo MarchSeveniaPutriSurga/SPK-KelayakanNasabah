@@ -149,13 +149,10 @@
                     @endphp
                     <tr class="criterion-row">
                         <td class="text-center">
-                            <span class="code-badge">{{ $c->code }}</span>
+                            <strong>{{ $c->code }}</strong>
                         </td>
                         <td>
                             <div class="d-flex align-items-center">
-                                <div class="criterion-icon me-2">
-                                    <i class="fa-solid fa-chart-simple"></i>
-                                </div>
                                 <strong>{{ $c->name }}</strong>
                             </div>
                         </td>
@@ -302,30 +299,6 @@
 .stat-content h3 {
     font-weight: 700;
     color: #212529;
-}
-
-/* Criterion Icon */
-.criterion-icon {
-    width: 36px;
-    height: 36px;
-    border-radius: 8px;
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(99, 102, 241, 0.2));
-    color: var(--primary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-}
-
-/* Code Badge */
-.code-badge {
-    display: inline-block;
-    padding: 0.5rem 0.75rem;
-    background: linear-gradient(135deg, var(--primary), var(--accent));
-    color: white;
-    border-radius: 8px;
-    font-weight: bold;
-    font-size: 0.875rem;
 }
 
 /* Weight Badge */
