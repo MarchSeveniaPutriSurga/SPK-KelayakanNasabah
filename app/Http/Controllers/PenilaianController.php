@@ -17,9 +17,7 @@ class PenilaianController extends Controller
         $criteria  = Criterion::all();
         $customers = Customer::all();
 
-        // periode terpilih / aktif
-        $selected = $request->period_id
-            ?? Period::where('is_active', true)->value('id');
+        $selected = Period::where('is_active', true)->value('id');
 
         if (!$selected) {
             return view('penilaian.create', [
@@ -34,12 +32,15 @@ class PenilaianController extends Controller
 
         $selectedPeriod = Period::find($selected);
 
-        // ambil evaluasi yang sudah ada
         $evaluations = Evaluation::where('period_id', $selected)->get();
 
         $existingData = [];
         foreach ($evaluations as $ev) {
-            $existingData[$ev->customer_id][$ev->criterion_id] = $ev->real_value;
+            $existingData[$ev->customer_id][$ev->criterion_id] = [
+                'persen'     => $ev->real_value,
+                'keuntungan' => $ev->keuntungan,
+                'modal'      => $ev->modal,
+            ];
         }
 
         return view('penilaian.create', [
@@ -55,24 +56,22 @@ class PenilaianController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'period_id'    => 'required',
-            'quota_lolos'  => 'nullable|integer|min:1',
-            'checked'      => 'nullable|array',
-            'values'       => 'array'
+            'period_id'   => 'required',
+            'quota_lolos' => 'nullable|integer|min:1',
+            'checked'     => 'nullable|array',
+            'values'      => 'array',
+            'keuntungan'  => 'array',
+            'modal'       => 'array',
         ]);
 
         $period = Period::findOrFail($request->period_id);
 
-        // 🔥 SIMPAN QUOTA LOLOS (INI INTINYA)
         if ($request->filled('quota_lolos')) {
-            $period->update([
-                'quota_lolos' => $request->quota_lolos
-            ]);
+            $period->update(['quota_lolos' => $request->quota_lolos]);
         }
 
         $checkedCustomers = $request->checked ?? [];
 
-        // hapus evaluasi customer yang di-uncheck
         $existingCustomerIds = Evaluation::where('period_id', $period->id)
             ->pluck('customer_id')
             ->unique()
@@ -86,12 +85,24 @@ class PenilaianController extends Controller
                 ->delete();
         }
 
-        // simpan / update evaluasi
         foreach ($checkedCustomers as $customer_id) {
             if (!isset($request->values[$customer_id])) continue;
 
+            // Parse keuntungan & modal: hapus titik ribuan → float
+            $keuntungan = floatval(str_replace('.', '', $request->keuntungan[$customer_id] ?? 0));
+            $modal      = floatval(str_replace('.', '', $request->modal[$customer_id] ?? 0));
+
             foreach ($request->values[$customer_id] as $criterion_id => $val) {
-                $clean = intval(str_replace('.', '', $val));
+
+                $criterion = Criterion::find($criterion_id);
+
+                if (str_contains(strtolower($criterion->name), 'keuntungan')) {
+                    // ✅ Hitung dari keuntungan & modal, ABAIKAN $val dari form
+                    $clean = ($modal > 0) ? ($keuntungan / $modal) * 100 : 0;
+                } else {
+                    // ✅ Kriteria biasa: hapus titik ribuan saja
+                    $clean = floatval(str_replace('.', '', $val));
+                }
 
                 $param = ScoringParameter::where('criterion_id', $criterion_id)
                     ->where('min_value', '<=', $clean)
@@ -104,11 +115,13 @@ class PenilaianController extends Controller
                     [
                         'period_id'    => $period->id,
                         'customer_id'  => $customer_id,
-                        'criterion_id' => $criterion_id
+                        'criterion_id' => $criterion_id,
                     ],
                     [
                         'real_value' => $clean,
-                        'score'      => $score
+                        'score'      => $score,
+                        'keuntungan' => $keuntungan,
+                        'modal'      => $modal,
                     ]
                 );
             }

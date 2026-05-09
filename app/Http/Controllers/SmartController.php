@@ -17,16 +17,17 @@ class SmartController extends Controller
         $results = []; // Inisialisasi dengan array kosong
         $selected = null;
 
-        // Ambil periode aktif atau dari request
-        $period = null;
-        if ($request->has('period_id')) {
-            $period = Period::find($request->period_id);
-        } else {
-            $period = Period::where('is_active', true)->first();
-        }
+        // Ambil periode aktif
+        $period = Period::where('is_active', true)->first();
 
+        // Kalau belum ada periode aktif
         if (!$period) {
-            return view('smart.index', compact('periods', 'criteria', 'results', 'selected'));
+            return view('smart.index', [
+                'periods' => $periods,
+                'criteria' => $criteria,
+                'results' => $results,
+                'selected' => null
+            ]);
         }
 
         $selected = $period->id;

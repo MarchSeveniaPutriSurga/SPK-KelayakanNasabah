@@ -14,28 +14,13 @@
   </div>
 
   <!-- Filter Periode -->
-  <form class="mb-4" method="get" action="{{ route('smart.index') }}">
-    <div class="row g-3 align-items-end">
-      <div class="col-md-5">
-        <label class="form-label fw-semibold">
-          <i class="fa-solid fa-calendar-days me-2"></i>Pilih Periode Penilaian
-        </label>
-        <select name="period_id" class="form-select form-select-lg" onchange="this.form.submit()">
-          <option value="">-- Pilih Periode --</option>
-          @foreach($periods as $p)
-            <option value="{{ $p->id }}" {{ (isset($selected) && $selected == $p->id) ? 'selected':'' }}>
-              {{ $p->label }}
-            </option>
-          @endforeach
-        </select>
+  <div class="alert alert-primary d-flex align-items-center mb-4">
+      <i class="fa-solid fa-calendar-check fs-4 me-3"></i>
+      <div>
+          <strong>Periode Aktif:</strong> 
+          {{ $selectedPeriod->label ?? 'Tidak ada periode aktif' }}
       </div>
-      <div class="col-md-3">
-        <button type="submit" class="btn btn-primary w-100">
-          <i class="fa-solid fa-filter me-2"></i>Tampilkan Hasil
-        </button>
-      </div>
-    </div>
-  </form>
+  </div>
 
   @if(isset($selected) && $selected)
     <!-- Info Periode -->

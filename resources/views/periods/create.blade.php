@@ -3,13 +3,28 @@
 @section('content')
 <div class="card card-soft p-4">
     <!-- Header -->
-    <div class="d-flex align-items-center mb-4">
-        <div class="icon-circle me-3">
-            <i class="fa-solid fa-plus"></i>
-        </div>
-        <div>
-            <h4 class="mb-1 fw-bold">Tambah Periode Baru</h4>
+     <div class="d-flex justify-content-between align-items-center mb-4">
+    
+        <!-- Kiri: icon + title -->
+        <div class="d-flex align-items-center">
+            <div class="icon-circle me-3">
+                <i class="fa-solid fa-user-pen"></i>
+            </div>
+            <div>
+             <h4 class="mb-1 fw-bold">Tambah Periode Baru</h4>
             <p class="text-muted mb-0 small">Buat periode penilaian bulanan untuk nasabah</p>
+            </div>
+        </div>
+
+        <!-- Kanan: semua tombol -->
+        <div class="d-flex gap-2">
+            <button type="submit" form="periodForm" class="btn btn-primary">
+                <i class="fa-solid fa-save me-1"></i> Simpan
+            </button>
+
+            <a href="{{ route('parameters.index') }}" class="btn btn-outline-secondary">
+                <i class="fa-solid fa-arrow-left me-1"></i> Kembali
+            </a>
         </div>
     </div>
 
@@ -66,32 +81,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- Preview Label -->
-        <div class="mt-4">
-            <label class="form-label fw-semibold">
-                <i class="fa-solid fa-eye me-2"></i>Preview Label Periode
-            </label>
-            <div class="preview-card">
-                <div class="preview-icon">
-                    <i class="fa-solid fa-calendar-check"></i>
-                </div>
-                <div class="preview-content">
-                    <small class="text-muted d-block mb-1">Label yang akan dibuat:</small>
-                    <h5 class="mb-0" id="previewLabel">Periode {{ DateTime::createFromFormat('!m', date('n'))->format('F') }} {{ date('Y') }}</h5>
-                </div>
-            </div>
-        </div>
-
-        <!-- Buttons -->
-        <div class="d-flex gap-2 mt-4">
-            <button type="submit" class="btn btn-primary btn-lg">
-                <i class="fa-solid fa-save me-2"></i>Simpan Periode
-            </button>
-            <a href="{{ route('periods.index') }}" class="btn btn-outline-secondary btn-lg">
-                <i class="fa-solid fa-arrow-left me-2"></i>Kembali
-            </a>
-        </div>
     </form>
 </div>
 
@@ -133,45 +122,6 @@
 .form-text {
     font-size: 0.875rem;
     margin-top: 0.5rem;
-}
-
-/* Preview Card */
-.preview-card {
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(99, 102, 241, 0.1));
-    border: 2px dashed var(--primary);
-    border-radius: 12px;
-    padding: 1.5rem;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    transition: all 0.3s ease;
-}
-
-.preview-card:hover {
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(99, 102, 241, 0.15));
-    transform: translateY(-2px);
-}
-
-.preview-icon {
-    width: 64px;
-    height: 64px;
-    border-radius: 12px;
-    background: linear-gradient(135deg, var(--primary), var(--accent));
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.75rem;
-    flex-shrink: 0;
-}
-
-.preview-content {
-    flex: 1;
-}
-
-.preview-content h5 {
-    color: var(--primary);
-    font-weight: 700;
 }
 
 /* Buttons */
