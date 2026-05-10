@@ -20,13 +20,16 @@ class SmartController extends Controller
         // Ambil periode aktif
         $period = Period::where('is_active', true)->first();
 
+        $selectedPeriod = $period;
+
         // Kalau belum ada periode aktif
         if (!$period) {
             return view('smart.index', [
                 'periods' => $periods,
                 'criteria' => $criteria,
                 'results' => $results,
-                'selected' => null
+                'selected' => null,
+                'selectedPeriod' => null,
             ]);
         }
 
@@ -156,6 +159,6 @@ class SmartController extends Controller
             $r['rekomendasi'] = round($rekomendasi);
         }
 
-        return view('smart.index', compact('periods', 'criteria', 'results', 'selected'));
+        return view('smart.index', compact('periods', 'criteria', 'results', 'selected', 'selectedPeriod'));
     }
 }
