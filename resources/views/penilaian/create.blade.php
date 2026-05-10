@@ -4,9 +4,6 @@
 <div class="card card-soft p-4">
     <!-- Header -->
     <div class="d-flex align-items-center mb-4">
-        <div class="icon-circle me-3">
-            <i class="fa-solid fa-file-pen"></i>
-        </div>
         <div>
             <h4 class="mb-1 fw-bold">Form Penilaian Nasabah</h4>
             <p class="text-muted mb-0 small">Input nilai kriteria untuk setiap nasabah berdasarkan periode</p>
@@ -51,7 +48,7 @@
                 @foreach($criteria as $c)
                     <div class="col-md-4 col-lg-3">
                         <div class="criteria-badge">
-                            <span class="badge bg-primary">{{ $c->code }}</span>
+                            <span class="badge" style="background-color: #91C6BC !important;">{{ $c->code }}</span>
                             <small class="ms-2">{{ $c->name }}</small>
                         </div>
                     </div>
@@ -94,7 +91,7 @@
                             </th>
                             @foreach($criteria as $c)
                                 <th class="text-center" width="150">
-                                    <div class="fw-bold text-primary">{{ $c->code }}</div>
+                                    <div class="fw-bold text-green-950">{{ $c->code }}</div>
                                     <small class="text-muted d-block">{{ $c->name }}</small>
                                 </th>
                             @endforeach
@@ -119,67 +116,65 @@
 
                             <td>
                                 <div class="d-flex align-items-center">
-                                    <div class="avatar-circle me-2">
-                                        {{ strtoupper(substr($cus->name, 0, 1)) }}
-                                    </div>
                                     <strong>{{ $cus->name }}</strong>
                                 </div>
                             </td>
 
                             @foreach($criteria as $c)
-<td>
-    @if(str_contains(strtolower($c->name), 'keuntungan'))
+                            <td>
+                                @if(str_contains(strtolower($c->name), 'keuntungan'))
 
-        <!-- KEUNTUNGAN -->
-       <input type="text"
-    name="keuntungan[{{ $cus->id }}]"
-    value="{{ isset($existingData[$cus->id][$c->id]['keuntungan']) 
-    ? number_format($existingData[$cus->id][$c->id]['keuntungan'], 0, ',', '.') 
-    : '' }}"
-    class="form-control keuntungan-input real-input mb-1"
-    placeholder="Keuntungan"
-    {{ $hasEvaluation ? '' : 'disabled' }}>
+                                    <!-- KEUNTUNGAN -->
+                                <input type="text"
+                                name="keuntungan[{{ $cus->id }}]"
+                                value="{{ isset($existingData[$cus->id][$c->id]['keuntungan']) 
+                                ? number_format($existingData[$cus->id][$c->id]['keuntungan'], 0, ',', '.') 
+                                : '' }}"
+                                class="form-control keuntungan-input real-input mb-1"
+                                placeholder="Keuntungan"
+                                {{ $hasEvaluation ? '' : 'disabled' }}>
 
-        <!-- MODAL -->
-  <input type="text"
-    name="modal[{{ $cus->id }}]"
-    value="{{ isset($existingData[$cus->id][$c->id]['modal']) 
-    ? number_format($existingData[$cus->id][$c->id]['modal'], 0, ',', '.') 
-    : '' }}"
-    class="form-control modal-input real-input mb-1"
-    placeholder="Modal"
-    {{ $hasEvaluation ? '' : 'disabled' }}>
+                                    <!-- MODAL -->
+                            <input type="text"
+                                name="modal[{{ $cus->id }}]"
+                                value="{{ isset($existingData[$cus->id][$c->id]['modal']) 
+                                ? number_format($existingData[$cus->id][$c->id]['modal'], 0, ',', '.') 
+                                : '' }}"
+                                class="form-control modal-input real-input mb-1"
+                                placeholder="Modal"
+                                {{ $hasEvaluation ? '' : 'disabled' }}>
 
-        <!-- BUTTON -->
-        <button type="button"
-            class="btn btn-sm btn-primary w-100 hitung-btn mb-1"
-            {{ $hasEvaluation ? '' : 'readonly' }}>
-            Hitung %
-        </button>
+                                    <!-- BUTTON -->
+                                    <button type="button"
+                                        class="btn btn-sm w-100 hitung-btn mb-1"
+                                        style="background-color: #c58671 !important; border-color: #c58671 !important; color: white;"
+                                        {{ $hasEvaluation ? '' : 'readonly' }}>
+                                        Hitung %
+                                    </button>
 
-        <!-- HASIL -->
-<input type="text"
-    name="values[{{ $cus->id }}][{{ $c->id }}]"
-    value="{{ isset($existingData[$cus->id][$c->id]['persen']) 
-        ? number_format($existingData[$cus->id][$c->id]['persen'], 1) . ' %' 
-        : '' }}"
-    class="form-control persen-output text-center"
-    readonly>
+                                    <!-- HASIL -->
+                            <input type="text"
+                                name="values[{{ $cus->id }}][{{ $c->id }}]"
+                                value="{{ isset($existingData[$cus->id][$c->id]['persen']) 
+                                    ? number_format($existingData[$cus->id][$c->id]['persen'], 1) . ' %' 
+                                    : '' }}"
+                                class="form-control persen-output text-center"
+                                readonly>
 
-    @else
+                                @else
 
-        <!-- 🔥 INI YANG KAMU KURANG -->
-           <input type="text"
-        name="values[{{ $cus->id }}][{{ $c->id }}]"
-        class="form-control real-input text-center"
-        value="{{ isset($existingData[$cus->id][$c->id]['persen']) 
-    ? number_format($existingData[$cus->id][$c->id]['persen'], 0, ',', '.') 
-    : '' }}"
-        {{ $hasEvaluation ? '' : 'disabled' }}>
+                                    <!-- 🔥 INI YANG KAMU KURANG -->
+                                    <input type="text"
+                                    name="values[{{ $cus->id }}][{{ $c->id }}]"
+                                    class="form-control real-input text-center"
+                                    value="{{ isset($existingData[$cus->id][$c->id]['persen']) 
+                                ? number_format($existingData[$cus->id][$c->id]['persen'], 0, ',', '.') 
+                                : '' }}"
+                                    {{ $hasEvaluation ? '' : 'disabled' }}>
 
-    @endif
-</td>
-@endforeach
+                                @endif
+                            </td>
+                            @endforeach
                         </tr>
                         @endforeach
                     </tbody>

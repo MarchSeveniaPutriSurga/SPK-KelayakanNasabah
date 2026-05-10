@@ -180,7 +180,7 @@ class DashboardController extends Controller
         $criteriaAvgScores = [];
 
         foreach ($criteria as $c) {
-            $criteriaLabels[] = $c->code . ' - ' . $c->name;
+            $criteriaLabels[] = $c->code;
 
             // Hitung rata-rata skor mentah untuk kriteria ini
             $scores = [];

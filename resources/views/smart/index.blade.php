@@ -4,9 +4,6 @@
 <div class="card card-soft p-4">
   <!-- Header -->
   <div class="d-flex align-items-center mb-4">
-    <div class="icon-circle me-3">
-      <i class="fa-solid fa-ranking-star"></i>
-    </div>
     <div>
       <h4 class="mb-1 fw-bold">Hasil Ranking SPK - SMART</h4>
       <p class="text-muted mb-0 small">Sistem Pendukung Keputusan menggunakan metode SMART</p>
@@ -39,14 +36,14 @@
         <thead class="table-light">
           <tr>
             <th width="80" class="text-center">
-              <i class="fa-solid fa-trophy me-1"></i>Rank
+              Rank
             </th>
-            <th width="200">
-              <i class="fa-solid fa-user me-1"></i>Nama Nasabah
+            <th width="200" class="text-center">
+              Nama Nasabah
             </th>
             @foreach($criteria as $c)
               <th class="text-center">
-                <div class="fw-bold text-primary">{{ $c->code }}</div>
+                <div class="fw-bold text-green-950">{{ $c->code }}</div>
                 <small class="text-muted d-block">{{ $c->name }}</small>
                 <span class="badge bg-secondary mt-1">Bobot: {{ $c->weight }}</span>
               </th>
@@ -73,9 +70,6 @@
                 <!-- Nama Nasabah -->
                 <td>
                   <div class="d-flex align-items-center">
-                    <div class="avatar-circle me-2">
-                      {{ strtoupper(substr($r['customer']->name, 0, 1)) }}
-                    </div>
                     <strong>{{ $r['customer']->name }}</strong>
                   </div>
                 </td>
@@ -87,7 +81,7 @@
                     <div class="criteria-detail">
                       <div class="d-flex justify-content-between align-items-center mb-1">
                         <small class="text-muted">Skor:</small>
-                        <span class="badge bg-info">{{ number_format($d['raw'], 2) }}</span>
+                        <span class="badge" style="background-color: #91C6BC !important;">{{ number_format($d['raw'], 2) }}</span>
                       </div>
                       <div class="d-flex justify-content-between align-items-center mb-1">
                         <small class="text-muted">Norm:</small>
@@ -102,10 +96,10 @@
                 @endforeach
                 
                 <!-- Total -->
-                <td class="text-center bg-primary bg-opacity-10">
-                  <div class="total-score">
-                    {{ number_format($r['total'], 3) }}
-                  </div>
+                <td class="text-center">
+                    <span style="background-color: rgba(145, 198, 188, 0.2); color: #2a7a6e; font-weight: 800; font-size: 1.2rem; padding: 0.4rem 0.85rem; border-radius: 8px; border: 1px solid rgba(145, 198, 188, 0.5);">
+                        {{ number_format($r['total'], 3) }}
+                    </span>
                 </td>
 
                 <td class="text-center">

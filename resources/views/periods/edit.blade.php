@@ -20,6 +20,10 @@
                 <i class="fa-solid fa-save me-1"></i> Update
             </button>
 
+            <button type="reset" form="periodForm" class="btn btn-outline-secondary">
+                <i class="fa-solid fa-rotate-left me-1"></i> Reset
+            </button>
+
             <a href="{{ route('periods.index') }}" class="btn btn-outline-secondary">
                 <i class="fa-solid fa-arrow-left me-1"></i> Kembali
             </a>
@@ -212,67 +216,47 @@ input[type="number"]::-webkit-outer-spin-button {
 
 @push('scripts')
 <script>
-// Store original values
-const originalMonth = document.getElementById('monthSelect').value;
-const originalYear = document.getElementById('yearInput').value;
-const originalActive = document.getElementById('activeSwitch').checked;
-
-// Update preview label when month or year changes
 const monthSelect = document.getElementById('monthSelect');
-const yearInput = document.getElementById('yearInput');
-const previewLabel = document.getElementById('previewLabel');
+const yearInput   = document.getElementById('yearInput');
+
+// Simpan nilai awal untuk reset
+const originalMonth = monthSelect.value;
+const originalYear  = yearInput.value;
 
 const monthNames = [
     '', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
     'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
 ];
 
-function updatePreview() {
-    const month = monthSelect.value;
-    const year = yearInput.value;
-    
-    if (month && year) {
-        const monthName = monthNames[parseInt(month)];
-        previewLabel.textContent = `Periode ${monthName} ${year}`;
-    } else {
-        previewLabel.textContent = 'Periode - (Pilih bulan dan tahun)';
-    }
-}
-
-monthSelect.addEventListener('change', updatePreview);
-yearInput.addEventListener('input', updatePreview);
-
-// Check for changes
+// Cek ada perubahan atau tidak
 function hasChanges() {
-    return monthSelect.value !== originalMonth || 
-           yearInput.value !== originalYear || 
-           document.getElementById('activeSwitch').checked !== originalActive;
+    return monthSelect.value !== originalMonth ||
+           yearInput.value !== originalYear;
 }
 
-// Form validation
+// Validasi sebelum submit
 document.getElementById('periodForm').addEventListener('submit', function(e) {
     const month = monthSelect.value;
-    const year = yearInput.value;
-    
+    const year  = yearInput.value;
+
     if (!month || !year) {
         e.preventDefault();
         alert('Harap lengkapi bulan dan tahun terlebih dahulu');
         return false;
     }
-    
+
     if (year < 2020 || year > 2099) {
         e.preventDefault();
         alert('Tahun harus antara 2020 - 2099');
         return false;
     }
-    
+
     if (!hasChanges()) {
         e.preventDefault();
         alert('Tidak ada perubahan data yang dilakukan.');
         return false;
     }
-    
-    // Confirm before submit
+
     const monthName = monthNames[parseInt(month)];
     if (!confirm(`Update periode menjadi ${monthName} ${year}?\n\nPerubahan akan disimpan ke database.`)) {
         e.preventDefault();
@@ -280,32 +264,23 @@ document.getElementById('periodForm').addEventListener('submit', function(e) {
     }
 });
 
-// Reset form handler
+// Reset ke nilai awal
 document.querySelector('button[type="reset"]').addEventListener('click', function(e) {
-    if (!confirm('Reset form ke data awal?')) {
-        e.preventDefault();
-        return false;
-    }
-    
-    // Restore original values
-    setTimeout(() => {
-        monthSelect.value = originalMonth;
-        yearInput.value = originalYear;
-        document.getElementById('activeSwitch').checked = originalActive;
-        updatePreview();
-    }, 10);
+    e.preventDefault();
+
+    if (!confirm('Reset form ke data awal?')) return;
+
+    monthSelect.value = originalMonth;
+    yearInput.value   = originalYear;
 });
 
-// Warn before leaving with unsaved changes
+// Warn sebelum keluar kalau ada perubahan
 window.addEventListener('beforeunload', function(e) {
     if (hasChanges()) {
         e.preventDefault();
         e.returnValue = '';
     }
 });
-
-// Initialize preview on page load
-updatePreview();
 </script>
 @endpush
 

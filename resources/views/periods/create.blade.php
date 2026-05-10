@@ -22,7 +22,11 @@
                 <i class="fa-solid fa-save me-1"></i> Simpan
             </button>
 
-            <a href="{{ route('parameters.index') }}" class="btn btn-outline-secondary">
+            <button type="reset" form="periodForm" class="btn btn-outline-secondary">
+                <i class="fa-solid fa-rotate-left me-1"></i> Reset
+            </button>
+
+            <a href="{{ route('periods.index') }}" class="btn btn-outline-secondary">
                 <i class="fa-solid fa-arrow-left me-1"></i> Kembali
             </a>
         </div>
@@ -223,6 +227,21 @@ document.getElementById('periodForm').addEventListener('submit', function(e) {
         e.preventDefault();
         return false;
     }
+});
+
+// Reset form handler
+document.querySelector('button[type="reset"]').addEventListener('click', function(e) {
+    if (!confirm('Reset semua input? Data yang dimasukkan akan hilang.')) {
+        e.preventDefault();
+        return false;
+    }
+
+    // Reset select & input ke default
+    setTimeout(() => {
+        monthSelect.value = '';
+        yearInput.value = '{{ date("Y") }}';
+        updatePreview();
+    }, 10);
 });
 
 // Initialize preview on page load

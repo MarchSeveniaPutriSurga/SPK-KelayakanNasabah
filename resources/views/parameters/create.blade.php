@@ -4,7 +4,7 @@
 <link rel="stylesheet" href="{{ asset('css/parameters-style.css') }}">
 
 <div class="card card-soft p-4">
-      <!-- Header -->
+    <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
     
         <!-- Kiri: icon + title -->

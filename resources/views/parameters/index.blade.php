@@ -7,9 +7,6 @@
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div class="d-flex align-items-center">
-            <div class="icon-circle me-3">
-                <i class="fa-solid fa-sliders"></i>
-            </div>
             <div>
                 <h4 class="mb-1 fw-bold">Parameter Scoring</h4>
                 <p class="text-muted mb-0 small">Kelola rentang nilai dan skor untuk setiap kriteria</p>
@@ -146,22 +143,22 @@
                             @endif
                         </td>
                         <td class="text-center">
-                            <div class="btn-group" role="group">
-                                <a href="{{ route('parameters.edit', $p->id) }}" 
-                                   class="btn btn-sm btn-warning" 
-                                   title="Edit Parameter">
+                            <div class="d-flex gap-2 justify-content-center">
+                                <a href="{{ route('parameters.edit', $p->id) }}"
+                                class="btn btn-sm btn-outline-warning rounded"
+                                title="Edit Parameter">
                                     <i class="fa-solid fa-pen"></i>
                                 </a>
                                 @if($isUsed)
-                                    <button type="button" 
-                                            class="btn btn-sm btn-secondary" 
+                                    <button type="button"
+                                            class="btn btn-sm btn-outline-secondary rounded"
                                             disabled
                                             title="Tidak dapat dihapus karena sedang digunakan dalam penilaian">
                                         <i class="fa-solid fa-lock"></i>
                                     </button>
                                 @else
-                                    <button type="button" 
-                                            class="btn btn-sm btn-danger delete-btn" 
+                                    <button type="button"
+                                            class="btn btn-sm btn-outline-danger rounded delete-btn"
                                             data-id="{{ $p->id }}"
                                             data-criterion="{{ $p->criterion->code }}"
                                             data-range="{{ number_format($p->min_value, 0, ',', '.') }} - {{ number_format($p->max_value, 0, ',', '.') }}"
@@ -170,13 +167,13 @@
                                     </button>
                                 @endif
                             </div>
-                            
+
                             <!-- Hidden Delete Form -->
-                            <form id="delete-form-{{ $p->id }}" 
-                                  action="{{ route('parameters.destroy', $p->id) }}" 
-                                  method="post" 
-                                  style="display:none">
-                                @csrf 
+                            <form id="delete-form-{{ $p->id }}"
+                                action="{{ route('parameters.destroy', $p->id) }}"
+                                method="post"
+                                style="display:none">
+                                @csrf
                                 @method('DELETE')
                             </form>
                         </td>
@@ -214,19 +211,6 @@
 </div>
 
 <style>
-/* Icon Circle */
-.icon-circle {
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--primary), var(--accent));
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-}
-
 /* Stat Card Modern */
 .stat-card-modern {
     background: white;

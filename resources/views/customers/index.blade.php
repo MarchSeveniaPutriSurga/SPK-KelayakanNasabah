@@ -5,9 +5,6 @@
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div class="d-flex align-items-center">
-            <div class="icon-circle me-3">
-                <i class="fa-solid fa-users"></i>
-            </div>
             <div>
                 <h4 class="mb-1 fw-bold">Data Nasabah</h4>
                 <p class="text-muted mb-0 small">Kelola informasi nasabah untuk penilaian</p>
@@ -156,19 +153,6 @@
 </div>
 
 <style>
-/* Icon Circle */
-.icon-circle {
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--primary), var(--accent));
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-}
-
 /* Avatar Circle */
 .avatar-circle {
     width: 42px;
@@ -293,10 +277,6 @@
 }
 
 /* Buttons */
-.btn {
-    border-radius: 0;
-}
-
 .btn-lg {
     padding: 0.75rem 1.5rem;
     font-weight: 600;

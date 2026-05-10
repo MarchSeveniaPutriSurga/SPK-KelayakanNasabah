@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <title>SPK Kelayakan Nasabah</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/png" href="{{ asset('images/logo-bumkalma.png') }}">
 
   <!-- Bootstrap 5 -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -28,55 +29,51 @@
 <!-- Sidebar -->
 <div class="sidebar" id="sidebar">
   <div class="sidebar-brand">
-    <h6>
-      <div class="brand-icon">
-        <i class="fa-solid fa-calculator"></i>
-      </div>
-      <span>SPK Penentuan Kelayakan Nasabah</span>
-    </h6>
+      <img src="{{ asset('images/logo-bumkalma.png') }}" alt="Logo" style="width: 75px; height: 75px; object-fit: contain; display: block; margin: 0 auto 0.75rem;">
+      <h6> SPK Penentuan Kelayakan Nasabah </h6>
   </div>
   
   <ul class="sidebar-menu">
     <li>
       <a href="{{ route('dashboard') }}" class="{{ Request::is('dashboard') ? 'active' : '' }}">
         <i class="fa-solid fa-chart-line"></i>
-        <span>Dashboard</span>
+        <span style="color: #212529 !important;">Dashboard</span>
       </a>
     </li>
     <li>
       <a href="{{ route('smart.index') }}" class="{{ Request::routeIs('smart.index') ? 'active' : '' }}">
         <i class="fa-solid fa-ranking-star"></i>
-        <span>Ranking</span>
+        <span style="color: #212529 !important;">Ranking</span>
       </a>
     </li>
     <li>
       <a href="{{ route('penilaian.create') }}" class="{{ Request::routeIs('penilaian.*') ? 'active' : '' }}">
         <i class="fa-solid fa-file-pen"></i>
-        <span>Penilaian</span>
+        <span style="color: #212529 !important;">Penilaian</span>
       </a>
     </li>
     <li>
       <a href="{{ route('customers.index') }}" class="{{ Request::routeIs('customers.*') ? 'active' : '' }}">
         <i class="fa-solid fa-users"></i>
-        <span>Nasabah</span>
+        <span style="color: #212529 !important;">Nasabah</span>
       </a>
     </li>
     <li>
       <a href="{{ route('periods.index') }}" class="{{ Request::routeIs('periods.*') ? 'active' : '' }}">
         <i class="fa-solid fa-calendar-days"></i>
-        <span>Periode</span>
+        <span style="color: #212529 !important;">Periode</span>
       </a>
     </li>
     <li>
       <a href="{{ route('criteria.index') }}" class="{{ Request::routeIs('criteria.*') ? 'active' : '' }}">
         <i class="fa-solid fa-list-check"></i>
-        <span>Kriteria</span>
+        <span style="color: #212529 !important;">Kriteria</span>
       </a>
     </li>
     <li>
       <a href="{{ route('parameters.index') }}" class="{{ Request::routeIs('parameters.*') ? 'active' : '' }}">
         <i class="fa-solid fa-sliders"></i>
-        <span>Parameter</span>
+        <span style="color: #212529 !important;">Parameter</span>
       </a>
     </li>
     <li>
@@ -84,7 +81,7 @@
         @csrf
         <button type="submit">
           <i class="fa-solid fa-arrow-right-from-bracket"></i>
-          <span>Logout</span>
+          <span style="color: #212529 !important;">Logout</span>
         </button>
       </form>
     </li>

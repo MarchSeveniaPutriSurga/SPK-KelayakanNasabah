@@ -5,9 +5,6 @@
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div class="d-flex align-items-center">
-            <div class="icon-circle me-3">
-                <i class="fa-solid fa-calendar-days"></i>
-            </div>
             <div>
                 <h4 class="mb-1 fw-bold">Manajemen Periode</h4>
                 <p class="text-muted mb-0 small">Kelola periode penilaian bulanan</p>
@@ -72,9 +69,6 @@
                         </td>
                         <td>
                             <div class="d-flex align-items-center">
-                                <div class="period-icon me-2">
-                                    <i class="fa-solid fa-calendar-check"></i>
-                                </div>
                                 <strong>{{ $p->label }}</strong>
                             </div>
                         </td>
@@ -98,39 +92,39 @@
                             @endif
                         </td>
                         <td class="text-center">
-                            <div class="btn-group" role="group">
-                                @if(!$p->is_active)
-                                    <a href="{{ route('periods.activate', $p->id) }}" 
-                                       class="btn btn-sm btn-info" 
-                                       title="Aktifkan Periode">
-                                        <i class="fa-solid fa-power-off"></i>
-                                    </a>
-                                @endif
-                                
-                                <a href="{{ route('periods.edit', $p->id) }}" 
-                                   class="btn btn-sm btn-warning" 
-                                   title="Edit Periode">
-                                    <i class="fa-solid fa-pen"></i>
-                                </a>
-                                
-                                <button type="button" 
-                                        class="btn btn-sm btn-danger delete-btn" 
-                                        data-id="{{ $p->id }}"
-                                        data-label="{{ $p->label }}"
-                                        title="Hapus Periode">
-                                    <i class="fa-solid fa-trash"></i>
-                                </button>
-                            </div>
-                            
-                            <!-- Hidden Delete Form -->
-                            <form id="delete-form-{{ $p->id }}" 
-                                  action="{{ route('periods.destroy', $p->id) }}" 
-                                  method="post" 
-                                  style="display:none">
-                                @csrf 
-                                @method('DELETE')
-                            </form>
-                        </td>
+    <div class="d-flex gap-2 justify-content-center">
+        @if(!$p->is_active)
+            <a href="{{ route('periods.activate', $p->id) }}"
+               class="btn btn-sm btn-outline-info rounded"
+               title="Aktifkan Periode">
+                <i class="fa-solid fa-power-off"></i>
+            </a>
+        @endif
+
+        <a href="{{ route('periods.edit', $p->id) }}"
+           class="btn btn-sm btn-outline-warning rounded"
+           title="Edit Periode">
+            <i class="fa-solid fa-pen"></i>
+        </a>
+
+        <button type="button"
+                class="btn btn-sm btn-outline-danger rounded delete-btn"
+                data-id="{{ $p->id }}"
+                data-label="{{ $p->label }}"
+                title="Hapus Periode">
+            <i class="fa-solid fa-trash"></i>
+        </button>
+    </div>
+
+    <!-- Hidden Delete Form -->
+    <form id="delete-form-{{ $p->id }}"
+          action="{{ route('periods.destroy', $p->id) }}"
+          method="post"
+          style="display:none">
+        @csrf
+        @method('DELETE')
+    </form>
+</td>
                     </tr>
                     @endforeach
                 </tbody>
@@ -140,31 +134,6 @@
 </div>
 
 <style>
-/* Icon Circle */
-.icon-circle {
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--primary), var(--accent));
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-}
-
-/* Period Icon */
-.period-icon {
-    width: 36px;
-    height: 36px;
-    border-radius: 8px;
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(99, 102, 241, 0.2));
-    color: var(--primary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
 /* Number Badge */
 .number-badge {
     width: 32px;
