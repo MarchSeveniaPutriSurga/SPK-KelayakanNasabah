@@ -141,7 +141,7 @@
                     {{-- SMART SCORE --}}
                     <td class="text-center">
                         <span style="background-color: rgba(145, 198, 188, 0.2); color: #2a7a6e; font-weight: 800; font-size: 1.1rem; padding: 0.4rem 0.85rem; border-radius: 8px; border: 1px solid rgba(145, 198, 188, 0.5);">
-                            {{ number_format($row['smart_score'], 4) }}
+                            {{ number_format($row['smart_score'], 2) }}
                         </span>
                     </td>
 

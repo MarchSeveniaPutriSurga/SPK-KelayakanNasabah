@@ -48,7 +48,7 @@
     </li>
     <li>
       <a href="{{ route('penilaian.riwayat') }}" class="{{ Request::routeIs('penilaian.riwayat') ? 'active' : '' }}">
-        <i class="fa-solid fa-ranking-star"></i>
+        <i class="fa-solid fa-clock-rotate-left"></i>
         <span style="color: #212529 !important;">Riwayat</span>
       </a>
     </li>
