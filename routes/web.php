@@ -9,8 +9,14 @@ use App\Http\Controllers\CriterionController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PenilaianController;
 use App\Http\Controllers\ScoringParameterController;
+use Illuminate\Support\Facades\Artisan;
 
 // Route::get('/', fn() => redirect()->route('smart.index'));
+
+Route::get('/clear', function () {
+    Artisan::call('config:clear');
+    return 'Cleared!';
+});
 
 Route::get('/', [AuthController::class, 'loginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.index');
