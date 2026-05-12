@@ -4,9 +4,6 @@
 <div class="card card-soft p-4">
     <!-- Header -->
     <div class="d-flex align-items-center mb-4">
-        <div class="icon-circle me-3">
-            <i class="fa-solid fa-file-pen"></i>
-        </div>
         <div>
             <h4 class="mb-1 fw-bold">Form Penilaian Nasabah</h4>
             <p class="text-muted mb-0 small">Input nilai kriteria untuk setiap nasabah berdasarkan periode</p>
@@ -14,28 +11,13 @@
     </div>
 
     <!-- Filter Periode -->
-    <form method="get" action="{{ route('penilaian.create') }}" class="mb-4">
-        <div class="row g-3 align-items-end">
-            <div class="col-md-5">
-                <label class="form-label fw-semibold">
-                    <i class="fa-solid fa-calendar-days me-2"></i>Pilih Periode Penilaian
-                </label>
-                <select name="period_id" class="form-select form-select-lg" onchange="this.form.submit()">
-                    <option value="">-- Pilih Periode --</option>
-                    @foreach($periods as $p)
-                        <option value="{{ $p->id }}" {{ $selected == $p->id ? 'selected':'' }}>
-                            {{ $p->label }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="col-md-3">
-                <button type="submit" class="btn btn-primary w-100">
-                    <i class="fa-solid fa-filter me-2"></i>Tampilkan Form
-                </button>
-            </div>
-        </div>
-    </form>
+    <div class="alert alert-primary d-flex align-items-center mb-4">
+    <i class="fa-solid fa-calendar-check fs-4 me-3"></i>
+    <div>
+        <strong>Periode Aktif:</strong> 
+        {{ $selectedPeriod->label ?? 'Tidak ada periode aktif' }}
+    </div>
+</div>
 
     @if(!$selected)
         <!-- Empty State -->
@@ -66,7 +48,7 @@
                 @foreach($criteria as $c)
                     <div class="col-md-4 col-lg-3">
                         <div class="criteria-badge">
-                            <span class="badge bg-primary">{{ $c->code }}</span>
+                            <span class="badge" style="background-color: #91C6BC !important;">{{ $c->code }}</span>
                             <small class="ms-2">{{ $c->name }}</small>
                         </div>
                     </div>
@@ -79,22 +61,6 @@
             <input type="hidden" name="period_id" value="{{ $selected }}">
 
             <input type="hidden" name="period_id" value="{{ $selected }}">
-
-            <!-- Quota Lolos -->
-            <div class="mb-4">
-                <label class="form-label fw-semibold">
-                    <i class="fa-solid fa-check-to-slot me-2"></i>Jumlah Nasabah Layak Lanjut
-                </label>
-                <input type="number"
-                    name="quota_lolos"
-                    class="form-control"
-                    min="1"
-                    placeholder="Contoh: 10"
-                    value="{{ $periods->firstWhere('id', $selected)->quota_lolos ?? '' }}">
-                <small class="text-muted">
-                    Nasabah dengan peringkat 1 sampai nilai ini akan berstatus <b>Layak Lanjut</b>
-                </small>
-            </div>
 
             <!-- Tabel Penilaian -->
             <div class="table-responsive">
@@ -109,7 +75,7 @@
                             </th>
                             @foreach($criteria as $c)
                                 <th class="text-center" width="150">
-                                    <div class="fw-bold text-primary">{{ $c->code }}</div>
+                                    <div class="fw-bold text-green-950">{{ $c->code }}</div>
                                     <small class="text-muted d-block">{{ $c->name }}</small>
                                 </th>
                             @endforeach
@@ -134,29 +100,63 @@
 
                             <td>
                                 <div class="d-flex align-items-center">
-                                    <div class="avatar-circle me-2">
-                                        {{ strtoupper(substr($cus->name, 0, 1)) }}
-                                    </div>
                                     <strong>{{ $cus->name }}</strong>
                                 </div>
                             </td>
 
                             @foreach($criteria as $c)
-                            @php
-                                // Ambil nilai yang sudah ada (kalau ada)
-                                $existingValue = $existingData[$cus->id][$c->id] ?? null;
-                                // Format dengan pemisah ribuan
-                                $displayValue = $existingValue ? number_format($existingValue, 0, ',', '.') : '';
-                            @endphp
-                            
                             <td>
+                                @if(str_contains(strtolower($c->name), 'keuntungan'))
+
+                                    <!-- KEUNTUNGAN -->
                                 <input type="text"
-                                       name="values[{{ $cus->id }}][{{ $c->id }}]"
-                                       class="form-control real-input text-center"
-                                       placeholder="0"
-                                       value="{{ $displayValue }}"
-                                       {{ $hasEvaluation ? '' : 'disabled' }}
-                                       required>
+                                name="keuntungan[{{ $cus->id }}]"
+                                value="{{ isset($existingData[$cus->id][$c->id]['keuntungan']) 
+                                ? number_format($existingData[$cus->id][$c->id]['keuntungan'], 0, ',', '.') 
+                                : '' }}"
+                                class="form-control keuntungan-input real-input mb-1"
+                                placeholder="Keuntungan"
+                                {{ $hasEvaluation ? '' : 'disabled' }}>
+
+                                    <!-- MODAL -->
+                            <input type="text"
+                                name="modal[{{ $cus->id }}]"
+                                value="{{ isset($existingData[$cus->id][$c->id]['modal']) 
+                                ? number_format($existingData[$cus->id][$c->id]['modal'], 0, ',', '.') 
+                                : '' }}"
+                                class="form-control modal-input real-input mb-1"
+                                placeholder="Modal"
+                                {{ $hasEvaluation ? '' : 'disabled' }}>
+
+                                    <!-- BUTTON -->
+                                    <button type="button"
+                                        class="btn btn-sm w-100 hitung-btn mb-1"
+                                        style="background-color: #c58671 !important; border-color: #c58671 !important; color: white;"
+                                        {{ $hasEvaluation ? '' : 'readonly' }}>
+                                        Hitung %
+                                    </button>
+
+                                    <!-- HASIL -->
+                            <input type="text"
+                                name="values[{{ $cus->id }}][{{ $c->id }}]"
+                                value="{{ isset($existingData[$cus->id][$c->id]['persen']) 
+                                    ? number_format($existingData[$cus->id][$c->id]['persen'], 1) . ' %' 
+                                    : '' }}"
+                                class="form-control persen-output text-center"
+                                readonly>
+
+                                @else
+
+                                    <!-- 🔥 INI YANG KAMU KURANG -->
+                                    <input type="text"
+                                    name="values[{{ $cus->id }}][{{ $c->id }}]"
+                                    class="form-control real-input text-center"
+                                    value="{{ isset($existingData[$cus->id][$c->id]['persen']) 
+                                ? number_format($existingData[$cus->id][$c->id]['persen'], 0, ',', '.') 
+                                : '' }}"
+                                    {{ $hasEvaluation ? '' : 'disabled' }}>
+
+                                @endif
                             </td>
                             @endforeach
                         </tr>
@@ -184,106 +184,169 @@
 </div>
 
 @push('scripts')
-<script>
-// Update selected count
-function updateSelectedCount() {
-    const checkedCount = document.querySelectorAll('.select-row:checked').length;
-    document.getElementById('selectedCount').textContent = `${checkedCount} nasabah dipilih`;
-    document.getElementById('submitBtn').disabled = checkedCount === 0;
-}
+    <script>
+        // Update selected count
+        function updateSelectedCount() {
+            const checkedCount = document.querySelectorAll('.select-row:checked').length;
+            document.getElementById('selectedCount').textContent = `${checkedCount} nasabah dipilih`;
+            document.getElementById('submitBtn').disabled = checkedCount === 0;
+        }
 
-// Format angka dengan pemisah ribuan
-document.querySelectorAll('.real-input').forEach(el => {
-    el.addEventListener('input', function() {
-        let v = this.value.replace(/\D/g,'');
-        this.value = v.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-    });
-});
+        // 🔥 FORMAT ANGKA + SIMPAN VALUE ASLI
+        document.querySelectorAll('.real-input, .keuntungan-input, .modal-input')
+        .forEach(input => {
+            input.addEventListener('input', function() {
 
-// Enable input hanya jika checkbox dicentang
-document.querySelectorAll('.select-row').forEach(cb => {
-    cb.addEventListener('change', function() {
-        let tr = this.closest('tr');
-        
-        // Toggle class selected
-        tr.classList.toggle('selected', this.checked);
-        
-        // Enable/disable inputs
-        tr.querySelectorAll('input[type=text]').forEach(inp => {
-            inp.disabled = !this.checked;
-            if (!this.checked) {
-                inp.value = "";
-            } else {
-                inp.focus();
-            }
+                // ambil angka asli (hapus semua selain digit)
+                let raw = this.value.replace(/\D/g, '');
+
+                if (raw === '') {
+                    this.value = '';
+                    this.dataset.raw = '';
+                    return;
+                }
+
+                // simpan angka asli TANPA format
+                this.dataset.raw = raw;
+
+                // format tampilan ribuan
+                let formatted = raw.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+                this.value = formatted;
+            });
         });
-        
-        updateSelectedCount();
+
+        document.querySelectorAll('.hitung-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+
+        let td = this.closest('td');
+
+        let keuntunganInput = td.querySelector('.keuntungan-input');
+        let modalInput      = td.querySelector('.modal-input');
+        let output          = td.querySelector('.persen-output');
+
+        let keuntungan = keuntunganInput.dataset.raw || keuntunganInput.value.replace(/\./g,'');
+        let modal      = modalInput.dataset.raw || modalInput.value.replace(/\./g,'');
+
+        keuntungan = parseFloat(keuntungan);
+        modal = parseFloat(modal);
+
+        if (!keuntungan || !modal || modal <= 0) {
+            alert('Isi keuntungan & modal dengan benar dulu');
+            return;
+        }
+
+        let persen = (keuntungan / modal) * 100;
+
+        // tampilkan dengan desimal
+        output.value = persen.toFixed(1) + ' %';
+
+        // simpan angka asli
+        output.dataset.raw = persen.toFixed(2);
     });
 });
 
-// Check All functionality
-document.getElementById('checkAll').addEventListener('change', function() {
-    const isChecked = this.checked;
-    
-    document.querySelectorAll('.select-row').forEach(cb => {
-        cb.checked = isChecked;
-        cb.dispatchEvent(new Event('change'));
-    });
-});
-
-// Initialize count on page load
-document.addEventListener('DOMContentLoaded', function() {
-    updateSelectedCount();
-});
-
-// Reset button functionality
-document.querySelector('button[type="reset"]').addEventListener('click', function(e) {
-    e.preventDefault();
-    
-    if (confirm('Apakah Anda yakin ingin mereset semua pilihan dan input?')) {
+        // 🔥 CHECKBOX SELECT
         document.querySelectorAll('.select-row').forEach(cb => {
-            cb.checked = false;
-            cb.dispatchEvent(new Event('change'));
-        });
-        document.getElementById('checkAll').checked = false;
-    }
-});
+            cb.addEventListener('change', function() {
+                let tr = this.closest('tr');
 
-// Form validation before submit
-document.querySelector('form[action="{{ route('penilaian.store') }}"]').addEventListener('submit', function(e) {
-    const checkedCount = document.querySelectorAll('.select-row:checked').length;
-    
-    if (checkedCount === 0) {
-        e.preventDefault();
-        alert('Silakan pilih minimal 1 nasabah untuk dinilai');
-        return false;
-    }
-    
-    // Check if all required inputs are filled
-    let hasEmptyInput = false;
-    document.querySelectorAll('.select-row:checked').forEach(cb => {
-        const tr = cb.closest('tr');
-        tr.querySelectorAll('input[type=text]').forEach(inp => {
-            if (!inp.value.trim()) {
-                hasEmptyInput = true;
+                tr.classList.toggle('selected', this.checked);
+
+                tr.querySelectorAll('input, button').forEach(el => {
+                if (el.type !== 'checkbox') {
+                    el.disabled = !this.checked;
+
+                    if (!this.checked) {
+                        if (el.tagName === 'INPUT') {
+                            el.value = "";
+                            el.dataset.raw = "";
+                        }
+                    }
+                }
+            });
+
+                updateSelectedCount();
+            });
+        });
+
+        // 🔥 CHECK ALL
+        document.getElementById('checkAll').addEventListener('change', function() {
+            const isChecked = this.checked;
+
+            document.querySelectorAll('.select-row').forEach(cb => {
+                cb.checked = isChecked;
+                cb.dispatchEvent(new Event('change'));
+            });
+        });
+
+        // INIT
+        document.addEventListener('DOMContentLoaded', function() {
+            updateSelectedCount();
+        });
+
+        // RESET
+        document.querySelector('button[type="reset"]').addEventListener('click', function(e) {
+            e.preventDefault();
+
+            if (confirm('Apakah Anda yakin ingin mereset semua pilihan dan input?')) {
+                document.querySelectorAll('.select-row').forEach(cb => {
+                    cb.checked = false;
+                    cb.dispatchEvent(new Event('change'));
+                });
+                document.getElementById('checkAll').checked = false;
             }
         });
+
+        // 🔥 TAMBAHAN WAJIB
+document.addEventListener('DOMContentLoaded', function() {
+
+    updateSelectedCount();
+
+    // 🔥 FORMAT ULANG SAAT LOAD
+    document.querySelectorAll('.real-input').forEach(input => {
+        let raw = input.value.replace(/\D/g,'');
+
+        if (!raw) return;
+
+        input.dataset.raw = raw;
+
+        input.value = raw.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     });
-    
-    if (hasEmptyInput) {
+
+});
+
+        // 🔥 FIX SEBELUM SUBMIT (INI YANG PALING PENTING)
+document.querySelector('form').addEventListener('submit', function(e) {
+
+    // 🔥 AKTIFKAN SEMUA INPUT BIAR KEKIRIM
+    document.querySelectorAll('input').forEach(inp => {
+        inp.disabled = false;
+    });
+
+    let hasEmpty = false;
+
+    document.querySelectorAll('.select-row:checked').forEach(cb => {
+        let tr = cb.closest('tr');
+
+        tr.querySelectorAll('input[name^="values"]').forEach(inp => {
+
+            let raw = inp.dataset.raw || inp.value.replace('%','').trim();
+
+            if (!raw || raw === '') {
+                hasEmpty = true;
+            }
+
+            inp.value = raw;
+        });
+    });
+
+    if (hasEmpty) {
         e.preventDefault();
-        alert('Harap isi semua nilai kriteria untuk nasabah yang dipilih');
-        return false;
-    }
-    
-    // Confirm before submit
-    if (!confirm(`Anda akan menyimpan penilaian untuk ${checkedCount} nasabah. Lanjutkan?`)) {
-        e.preventDefault();
-        return false;
+        alert('Pastikan semua nilai termasuk hasil % sudah dihitung!');
+        return;
     }
 });
-</script>
+    </script>
 @endpush
 
 @endsection

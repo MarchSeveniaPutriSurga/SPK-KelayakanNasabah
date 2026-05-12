@@ -11,7 +11,9 @@ class Evaluation extends Model
         'customer_id',
         'criterion_id',
         'real_value',
-        'score'
+        'score',
+        'keuntungan',
+        'modal'
     ];
 
     public function period()

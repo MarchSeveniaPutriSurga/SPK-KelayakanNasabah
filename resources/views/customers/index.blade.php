@@ -5,9 +5,6 @@
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div class="d-flex align-items-center">
-            <div class="icon-circle me-3">
-                <i class="fa-solid fa-users"></i>
-            </div>
             <div>
                 <h4 class="mb-1 fw-bold">Data Nasabah</h4>
                 <p class="text-muted mb-0 small">Kelola informasi nasabah untuk penilaian</p>
@@ -26,7 +23,7 @@
                 <input type="text" 
                        class="form-control form-control-lg ps-5" 
                        id="searchInput" 
-                       placeholder="Cari nasabah berdasarkan nama, email, atau nomor telepon...">
+                       placeholder="Cari nasabah berdasarkan nama, alamat, atau usaha...">
             </div>
         </div>
         <div class="col-md-4">
@@ -54,42 +51,6 @@
             </div>
         </div>
     @else
-        <!-- Stats Cards -->
-        <div class="row g-3 mb-4">
-            <div class="col-md-4">
-                <div class="stat-card-modern">
-                    <div class="stat-icon bg-primary-subtle">
-                        <i class="fa-solid fa-users text-primary"></i>
-                    </div>
-                    <div class="stat-content">
-                        <h3 class="mb-0">{{ $customers->count() }}</h3>
-                        <small class="text-muted">Total Nasabah</small>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="stat-card-modern">
-                    <div class="stat-icon bg-success-subtle">
-                        <i class="fa-solid fa-phone text-success"></i>
-                    </div>
-                    <div class="stat-content">
-                        <h3 class="mb-0">{{ $customers->filter(fn($c) => $c->phone)->count() }}</h3>
-                        <small class="text-muted">Dengan Telepon</small>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="stat-card-modern">
-                    <div class="stat-icon bg-info-subtle">
-                        <i class="fa-solid fa-id-card text-info"></i>
-                    </div>
-                    <div class="stat-content">
-                        <h3 class="mb-0">{{ $customers->filter(fn($c) => $c->identifier)->count() }}</h3>
-                        <small class="text-muted">Dengan Email</small>
-                    </div>
-                </div>
-            </div>
-        </div>
 
         <!-- Table -->
         <div class="table-responsive">
@@ -98,13 +59,16 @@
                     <tr>
                         <th width="60" class="text-center">#</th>
                         <th>
+                            <i class="fa-solid fa-id-card"></i> NIK
+                        </th>
+                        <th>
                             <i class="fa-solid fa-user me-1"></i>Nama Nasabah
                         </th>
                         <th width="200">
-                            <i class="fa-solid fa-id-card me-1"></i>Email
+                            <i class="fa-solid fa-house"></i> Alamat
                         </th>
                         <th width="180">
-                            <i class="fa-solid fa-phone me-1"></i>Telepon
+                            <i class="fa-solid fa-briefcase"></i> Usaha
                         </th>
                         <th width="150" class="text-center">
                             <i class="fa-solid fa-cog me-1"></i>Aksi
@@ -118,10 +82,10 @@
                             <div class="number-badge">{{ $index + 1 }}</div>
                         </td>
                         <td>
+                            <strong>{{ $c->nik }}</strong>
+                        </td>
+                        <td>
                             <div class="d-flex align-items-center">
-                                {{-- <div class="avatar-circle me-2">
-                                    {{ strtoupper(substr($c->name, 0, 1)) }}
-                                </div> --}}
                                 <div>
                                     <strong class="d-block">{{ $c->name }}</strong>
                                     <small class="text-muted">Nasabah #{{ $c->id }}</small>
@@ -131,23 +95,22 @@
                         <td>
                             @if($c->identifier)
                                 <span class="badge bg-light text-dark">
-                                    <i class="fa-solid fa-hashtag me-1"></i>{{ $c->identifier }}
+                                    {{ $c->identifier }}
                                 </span>
                             @else
-                                <span class="text-muted small">
-                                    <i class="fa-solid fa-minus"></i> Tidak ada
+                                <span class="text-muted small d-inline-flex align-items-center justify-content-center">
+                                    <i class="fa-solid fa-minus"></i>
                                 </span>
                             @endif
                         </td>
                         <td>
                             @if($c->phone)
-                                <a href="tel:{{ $c->phone }}" class="text-decoration-none">
-                                    <i class="fa-solid fa-phone-volume me-1 text-success"></i>
+                                <span class="badge bg-light text-dark">
                                     {{ $c->phone }}
-                                </a>
+                                </span>
                             @else
-                                <span class="text-muted small">
-                                    <i class="fa-solid fa-phone-slash me-1"></i> Tidak ada
+                                <span class="text-muted small d-inline-flex align-items-center justify-content-center">
+                                    <i class="fa-solid fa-minus"></i>
                                 </span>
                             @endif
                         </td>
@@ -193,19 +156,6 @@
 </div>
 
 <style>
-/* Icon Circle */
-.icon-circle {
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--primary), var(--accent));
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-}
-
 /* Avatar Circle */
 .avatar-circle {
     width: 42px;
@@ -330,10 +280,6 @@
 }
 
 /* Buttons */
-.btn {
-    border-radius: 0;
-}
-
 .btn-lg {
     padding: 0.75rem 1.5rem;
     font-weight: 600;

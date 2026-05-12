@@ -5,9 +5,6 @@
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div class="d-flex align-items-center">
-            <div class="icon-circle me-3">
-                <i class="fa-solid fa-list-check"></i>
-            </div>
             <div>
                 <h4 class="mb-1 fw-bold">Master Kriteria Penilaian</h4>
                 <p class="text-muted mb-0 small">Kelola kriteria untuk metode SMART</p>
@@ -30,8 +27,6 @@
         <i class="fa-solid fa-info-circle fs-4 me-3"></i>
         <div>
             <strong>Informasi:</strong> Sistem mendukung maksimal 4 kriteria penilaian untuk metode SMART.
-            <br>
-            <small>Total bobot semua kriteria harus sama dengan 1 (100%). Saat ini: <strong>{{ $criteria->sum('weight') }}</strong></small>
         </div>
     </div>
 
@@ -99,19 +94,26 @@
         <!-- Weight Validation Alert -->
         @php $totalWeight = $criteria->sum('weight'); @endphp
         @if(abs($totalWeight - 1) > 0.01)
-            <div class="alert alert-warning d-flex align-items-center mb-4">
-                <i class="fa-solid fa-triangle-exclamation fs-4 me-3"></i>
+            <div class="mb-4 p-3 d-flex align-items-center gap-3"
+                 style="background:#fff8e1; border-left: 5px solid #f59e0b; border-radius: 10px; box-shadow: 0 2px 8px rgba(245,158,11,0.15);">
+                <i class="fa-solid fa-triangle-exclamation" style="font-size:2rem; color:#f59e0b; flex-shrink:0;"></i>
                 <div>
-                    <strong>Peringatan:</strong> Total bobot kriteria adalah <strong>{{ $totalWeight }}</strong>, seharusnya <strong>1.00</strong>
-                    <br>
-                    <small>Silakan sesuaikan bobot kriteria agar total = 1.00 (100%)</small>
+                    <div class="fw-bold" style="font-size:1rem; color:#92400e;">
+                        Peringatan: Total Bobot Tidak Valid!
+                    </div>
+                    <div style="color:#78350f;">
+                        Total bobot saat ini <strong>{{ number_format($totalWeight, 2) }}</strong>, seharusnya <strong>1.00</strong> (100%).
+                        Hasil perhitungan SMART bisa tidak akurat.
+                    </div>
+                    <small style="color:#a16207;">Silakan edit bobot kriteria agar totalnya tepat 1.00</small>
                 </div>
             </div>
         @else
-            <div class="alert alert-success d-flex align-items-center mb-4">
-                <i class="fa-solid fa-circle-check fs-4 me-3"></i>
-                <div>
-                    <strong>Valid:</strong> Total bobot kriteria sudah sesuai (1.00 / 100%)
+            <div class="mb-4 p-3 d-flex align-items-center gap-3"
+                 style="background:#f0fdf4; border-left: 5px solid #22c55e; border-radius: 10px;">
+                <i class="fa-solid fa-circle-check" style="font-size:1.5rem; color:#22c55e; flex-shrink:0;"></i>
+                <div style="color:#166534;">
+                    <strong>Total bobot valid</strong> — sudah sesuai 1.00 (100%)
                 </div>
             </div>
         @endif
@@ -149,13 +151,10 @@
                     @endphp
                     <tr class="criterion-row">
                         <td class="text-center">
-                            <span class="code-badge">{{ $c->code }}</span>
+                            <strong>{{ $c->code }}</strong>
                         </td>
                         <td>
                             <div class="d-flex align-items-center">
-                                <div class="criterion-icon me-2">
-                                    <i class="fa-solid fa-chart-simple"></i>
-                                </div>
                                 <strong>{{ $c->name }}</strong>
                             </div>
                         </td>
@@ -188,22 +187,22 @@
                             @endif
                         </td>
                         <td class="text-center">
-                            <div class="btn-group" role="group">
-                                <a href="{{ route('criteria.edit', $c->id) }}" 
-                                   class="btn btn-sm btn-warning" 
-                                   title="Edit Kriteria">
+                            <div class="d-flex gap-2 justify-content-center">
+                                <a href="{{ route('criteria.edit', $c->id) }}"
+                                class="btn btn-sm btn-outline-warning rounded"
+                                title="Edit Kriteria">
                                     <i class="fa-solid fa-pen"></i>
                                 </a>
                                 @if($isUsed)
-                                    <button type="button" 
-                                            class="btn btn-sm btn-secondary" 
+                                    <button type="button"
+                                            class="btn btn-sm btn-outline-secondary rounded"
                                             disabled
                                             title="Tidak dapat dihapus karena sudah digunakan dalam penilaian">
                                         <i class="fa-solid fa-lock"></i>
                                     </button>
                                 @else
-                                    <button type="button" 
-                                            class="btn btn-sm btn-danger delete-btn" 
+                                    <button type="button"
+                                            class="btn btn-sm btn-outline-danger rounded delete-btn"
                                             data-id="{{ $c->id }}"
                                             data-code="{{ $c->code }}"
                                             data-name="{{ $c->name }}"
@@ -212,13 +211,13 @@
                                     </button>
                                 @endif
                             </div>
-                            
+
                             <!-- Hidden Delete Form -->
-                            <form id="delete-form-{{ $c->id }}" 
-                                  action="{{ route('criteria.destroy', $c->id) }}" 
-                                  method="post" 
-                                  style="display:none">
-                                @csrf 
+                            <form id="delete-form-{{ $c->id }}"
+                                action="{{ route('criteria.destroy', $c->id) }}"
+                                method="post"
+                                style="display:none">
+                                @csrf
                                 @method('DELETE')
                             </form>
                         </td>
@@ -258,19 +257,6 @@
 </div>
 
 <style>
-/* Icon Circle */
-.icon-circle {
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--primary), var(--accent));
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-}
-
 /* Stat Card Modern */
 .stat-card-modern {
     background: white;
@@ -302,30 +288,6 @@
 .stat-content h3 {
     font-weight: 700;
     color: #212529;
-}
-
-/* Criterion Icon */
-.criterion-icon {
-    width: 36px;
-    height: 36px;
-    border-radius: 8px;
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(99, 102, 241, 0.2));
-    color: var(--primary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-}
-
-/* Code Badge */
-.code-badge {
-    display: inline-block;
-    padding: 0.5rem 0.75rem;
-    background: linear-gradient(135deg, var(--primary), var(--accent));
-    color: white;
-    border-radius: 8px;
-    font-weight: bold;
-    font-size: 0.875rem;
 }
 
 /* Weight Badge */

@@ -7,9 +7,6 @@
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div class="d-flex align-items-center">
-            <div class="icon-circle me-3">
-                <i class="fa-solid fa-sliders"></i>
-            </div>
             <div>
                 <h4 class="mb-1 fw-bold">Parameter Scoring</h4>
                 <p class="text-muted mb-0 small">Kelola rentang nilai dan skor untuk setiap kriteria</p>
@@ -121,27 +118,18 @@
                             <span class="badge bg-light text-dark">{{ $index + 1 }}</span>
                         </td>
                         <td>
-                            <div class="criterion-badge">
-                                <i class="fa-solid fa-chart-simple"></i>
-                                <span>{{ $p->criterion->code }} - {{ $p->criterion->name }}</span>
-                            </div>
+                                <strong>{{ $p->criterion->code }} - {{ $p->criterion->name }}</strong>
                         </td>
                         <td class="text-center">
-                            <div class="range-badge range-min">
                                 <i class="fa-solid fa-greater-than-equal"></i>
                                 <strong>{{ number_format($p->min_value, 0, ',', '.') }}</strong>
-                            </div>
                         </td>
                         <td class="text-center">
-                            <div class="range-badge range-max">
                                 <i class="fa-solid fa-less-than-equal"></i>
                                 <strong>{{ number_format($p->max_value, 0, ',', '.') }}</strong>
-                            </div>
                         </td>
                         <td class="text-center">
-                            <div class="score-badge-number score-{{ $p->score }}">
-                                {{ $p->score }}
-                            </div>
+                                <strong>{{ $p->score }}</strong>
                         </td>
                         <td class="text-center">
                             @if($isUsed)
@@ -155,22 +143,22 @@
                             @endif
                         </td>
                         <td class="text-center">
-                            <div class="btn-group" role="group">
-                                <a href="{{ route('parameters.edit', $p->id) }}" 
-                                   class="btn btn-sm btn-warning" 
-                                   title="Edit Parameter">
+                            <div class="d-flex gap-2 justify-content-center">
+                                <a href="{{ route('parameters.edit', $p->id) }}"
+                                class="btn btn-sm btn-outline-warning rounded"
+                                title="Edit Parameter">
                                     <i class="fa-solid fa-pen"></i>
                                 </a>
                                 @if($isUsed)
-                                    <button type="button" 
-                                            class="btn btn-sm btn-secondary" 
+                                    <button type="button"
+                                            class="btn btn-sm btn-outline-secondary rounded"
                                             disabled
                                             title="Tidak dapat dihapus karena sedang digunakan dalam penilaian">
                                         <i class="fa-solid fa-lock"></i>
                                     </button>
                                 @else
-                                    <button type="button" 
-                                            class="btn btn-sm btn-danger delete-btn" 
+                                    <button type="button"
+                                            class="btn btn-sm btn-outline-danger rounded delete-btn"
                                             data-id="{{ $p->id }}"
                                             data-criterion="{{ $p->criterion->code }}"
                                             data-range="{{ number_format($p->min_value, 0, ',', '.') }} - {{ number_format($p->max_value, 0, ',', '.') }}"
@@ -179,13 +167,13 @@
                                     </button>
                                 @endif
                             </div>
-                            
+
                             <!-- Hidden Delete Form -->
-                            <form id="delete-form-{{ $p->id }}" 
-                                  action="{{ route('parameters.destroy', $p->id) }}" 
-                                  method="post" 
-                                  style="display:none">
-                                @csrf 
+                            <form id="delete-form-{{ $p->id }}"
+                                action="{{ route('parameters.destroy', $p->id) }}"
+                                method="post"
+                                style="display:none">
+                                @csrf
                                 @method('DELETE')
                             </form>
                         </td>
@@ -223,19 +211,6 @@
 </div>
 
 <style>
-/* Icon Circle */
-.icon-circle {
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--primary), var(--accent));
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-}
-
 /* Stat Card Modern */
 .stat-card-modern {
     background: white;
@@ -267,73 +242,6 @@
 .stat-content h3 {
     font-weight: 700;
     color: #212529;
-}
-
-/* Criterion Badge */
-.criterion-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border-radius: 8px;
-    font-weight: 600;
-    font-size: 0.875rem;
-}
-
-/* Range Badges */
-.range-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-    font-size: 0.875rem;
-    font-weight: 600;
-}
-
-.range-min {
-    background: #dbeafe;
-    color: #1e40af;
-}
-
-.range-max {
-    background: #fce7f3;
-    color: #be185d;
-}
-
-/* Score Badge Number (Angka) */
-.score-badge-number {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 48px;
-    height: 48px;
-    border-radius: 12px;
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: white;
-}
-
-.score-badge-number.score-1 {
-    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-}
-
-.score-badge-number.score-2 {
-    background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
-}
-
-.score-badge-number.score-3 {
-    background: linear-gradient(135deg, #eab308 0%, #ca8a04 100%);
-}
-
-.score-badge-number.score-4 {
-    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-}
-
-.score-badge-number.score-5 {
-    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
 }
 
 /* Table Styling */
@@ -399,22 +307,6 @@
 
 /* Responsive */
 @media (max-width: 768px) {
-    .criterion-badge {
-        font-size: 0.75rem;
-        padding: 0.375rem 0.75rem;
-    }
-
-    .range-badge {
-        font-size: 0.75rem;
-        padding: 0.375rem 0.75rem;
-    }
-
-    .score-badge-number {
-        width: 40px;
-        height: 40px;
-        font-size: 1.25rem;
-    }
-
     .stat-card-modern {
         padding: 1rem;
     }

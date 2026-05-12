@@ -38,4 +38,11 @@ Route::middleware(['auth'])->group(function () {
 
     // SMART ranking
     Route::get('smart', [SmartController::class, 'index'])->name('smart.index');
+
+    //Riwayat Penilaian
+    Route::get('/riwayat-penilaian', [PenilaianController::class, 'riwayat'])->name('penilaian.riwayat');
+
+    // export
+    Route::get('/smart/export/excel', [SmartController::class, 'exportExcel'])->name('smart.export.excel');
+    Route::get('/smart/export/pdf',   [SmartController::class, 'exportPdf'])->name('smart.export.pdf');
 });

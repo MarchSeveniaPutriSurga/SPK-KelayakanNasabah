@@ -46,6 +46,7 @@ class CustomerController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'nik' => 'required|digits:16|unique:customers,nik',
             'name' => 'required'
         ]);
 
@@ -63,6 +64,7 @@ class CustomerController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
+            'nik' => 'required|digits:16|unique:customers,nik',
             'name' => 'required'
         ]);
 

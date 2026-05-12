@@ -2,180 +2,262 @@
 
 @section('content')
 <div class="card card-soft p-4">
-  <!-- Header -->
-  <div class="d-flex align-items-center mb-4">
-    <div class="icon-circle me-3">
-      <i class="fa-solid fa-ranking-star"></i>
-    </div>
-    <div>
-      <h4 class="mb-1 fw-bold">Hasil Ranking SPK - SMART</h4>
-      <p class="text-muted mb-0 small">Sistem Pendukung Keputusan menggunakan metode SMART</p>
-    </div>
-  </div>
 
-  <!-- Filter Periode -->
-  <form class="mb-4" method="get" action="{{ route('smart.index') }}">
-    <div class="row g-3 align-items-end">
-      <div class="col-md-5">
-        <label class="form-label fw-semibold">
-          <i class="fa-solid fa-calendar-days me-2"></i>Pilih Periode Penilaian
-        </label>
-        <select name="period_id" class="form-select form-select-lg" onchange="this.form.submit()">
-          <option value="">-- Pilih Periode --</option>
-          @foreach($periods as $p)
-            <option value="{{ $p->id }}" {{ (isset($selected) && $selected == $p->id) ? 'selected':'' }}>
-              {{ $p->label }}
-            </option>
-          @endforeach
-        </select>
-      </div>
-      <div class="col-md-3">
-        <button type="submit" class="btn btn-primary w-100">
-          <i class="fa-solid fa-filter me-2"></i>Tampilkan Hasil
-        </button>
-      </div>
+    <!-- Header -->
+    <div class="d-flex align-items-center mb-4">
+        <div>
+            <h4 class="mb-1 fw-bold">Hasil Ranking SPK - SMART</h4>
+            <p class="text-muted mb-0 small">Sistem Pendukung Keputusan menggunakan metode SMART</p>
+        </div>
     </div>
-  </form>
+    
+    {{-- TOP BAR (FILTER + EXPORT) --}}
+    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-3">
 
-  @if(isset($selected) && $selected)
-    <!-- Info Periode -->
-    <div class="alert alert-info d-flex align-items-center mb-4">
-      <i class="fa-solid fa-info-circle fs-4 me-3"></i>
-      <div>
-        <strong>Periode Terpilih:</strong> {{ $periods->firstWhere('id',$selected)->label ?? '-' }}
-        <br>
-        <small>Menampilkan {{ is_array($results) ? count($results) : 0 }} nasabah dengan {{ is_array($criteria) || is_object($criteria) ? count($criteria) : 0 }} kriteria penilaian</small>
-      </div>
+        {{-- FILTER PERIODE--}}
+        <div class="alert alert-primary d-flex align-items-center mb-4">
+            <i class="fa-solid fa-calendar-check fs-4 me-3"></i>
+            <div>
+                <strong>Periode Aktif:</strong>
+                {{ $selectedPeriod->label ?? 'Tidak ada periode aktif' }}
+            </div>
+        </div>
+
+        {{-- EXPORT BUTTON --}}
+        @if(count($results) > 0)
+            <div class="d-flex gap-2">
+
+                <a href="{{ route('smart.export.excel') }}"
+                class="btn btn-success">
+                    <i class="fa-solid fa-file-excel me-1"></i>
+                    Excel
+                </a>
+
+                <a href="{{ route('smart.export.pdf') }}"
+                class="btn btn-danger">
+                    <i class="fa-solid fa-file-pdf me-1"></i>
+                    PDF
+                </a>
+
+            </div>
+        @endif
+
     </div>
 
-    <!-- Tabel Ranking -->
-    <div class="table-responsive">
-      <table class="table table-hover align-middle">
-        <thead class="table-light">
-          <tr>
-            <th width="80" class="text-center">
-              <i class="fa-solid fa-trophy me-1"></i>Rank
-            </th>
-            <th width="200">
-              <i class="fa-solid fa-user me-1"></i>Nama Nasabah
-            </th>
-            @foreach($criteria as $c)
-              <th class="text-center">
-                <div class="fw-bold text-primary">{{ $c->code }}</div>
-                <small class="text-muted d-block">{{ $c->name }}</small>
-                <span class="badge bg-secondary mt-1">Bobot: {{ $c->weight }}</span>
-              </th>
-            @endforeach
-            <th width="120" class="text-center bg-primary bg-opacity-10">
-              <i class="fa-solid fa-calculator me-1"></i>
-              <div class="fw-bold">Total Skor</div>
-            </th>
-            <th width="160" class="text-center">
-              <i class="fa-solid fa-circle-check me-1"></i>Status
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          @if(count($results) > 0)
-            @foreach($results as $i => $r)
-              <tr>
-                <!-- Rank -->
-                <td class="text-center">
-                  <span class="fs-5 fw-bold">{{ $i + 1 }}</span>
-                </td>
-                
-                <!-- Nama Nasabah -->
-                <td>
-                  <div class="d-flex align-items-center">
-                    <div class="avatar-circle me-2">
-                      {{ strtoupper(substr($r['customer']->name, 0, 1)) }}
-                    </div>
-                    <strong>{{ $r['customer']->name }}</strong>
-                  </div>
-                </td>
-                
-                <!-- Detail Kriteria -->
-                @foreach($criteria as $c)
-                  @php($d = $r['detail'][$c->id])
-                  <td>
-                    <div class="criteria-detail">
-                      <div class="d-flex justify-content-between align-items-center mb-1">
-                        <small class="text-muted">Skor:</small>
-                        <span class="badge bg-info">{{ number_format($d['raw'], 2) }}</span>
-                      </div>
-                      <div class="d-flex justify-content-between align-items-center mb-1">
-                        <small class="text-muted">Norm:</small>
-                        <span class="badge bg-light text-dark">{{ number_format($d['norm'], 3) }}</span>
-                      </div>
-                      <div class="d-flex justify-content-between align-items-center">
-                        <small class="text-muted">W×N:</small>
-                        <span class="badge bg-light text-dark">{{ number_format($d['weighted'], 3) }}</span>
-                      </div>
-                    </div>
-                  </td>
-                @endforeach
-                
-                <!-- Total -->
-                <td class="text-center bg-primary bg-opacity-10">
-                  <div class="total-score">
-                    {{ number_format($r['total'], 3) }}
-                  </div>
-                </td>
-
-                <td class="text-center">
-                  @if($r['status'] === 'Layak Lanjut')
-                    <span class="badge bg-success">
-                      <i class="fa-solid fa-check me-1"></i>Layak Lanjut
-                    </span>
-                  @elseif($r['status'] === 'Tidak Layak')
-                    <span class="badge bg-danger">
-                      <i class="fa-solid fa-xmark me-1"></i>Tidak Layak
-                    </span>
-                  @else
-                    <span class="badge bg-secondary">-</span>
-                  @endif
-                </td>
-              </tr>
-            @endforeach
-          @else
-            <tr>
-              <td colspan="{{ count($criteria) + 4 }}" class="text-center py-5">
-                <div class="empty-state">
-                  <i class="fa-solid fa-chart-simple text-muted mb-3" style="font-size: 3rem; opacity: 0.3;"></i>
-                  <h6 class="text-muted">Belum ada data penilaian</h6>
-                  <p class="text-muted">Silakan input penilaian terlebih dahulu</p>
+    {{-- INFO METODE SMART --}}
+        <div class="mb-4 p-4" style="background:#f8fafc; border-radius:12px; border:1px solid #e2e8f0;">
+            <div class="d-flex align-items-center gap-3 mb-3">
+                <div style="width:44px;height:44px;background:#2a7a6e;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <i class="fa-solid fa-lightbulb text-white"></i>
                 </div>
-              </td>
-            </tr>
-          @endif
-        </tbody>
-      </table>
-    </div>
+                <h6 class="fw-bold mb-0">Tentang Metode SMART</h6>
+            </div>
 
-    <!-- Legend -->
-    <div class="mt-4 p-3 bg-light rounded">
-      <h6 class="mb-3"><i class="fa-solid fa-circle-info me-2"></i>Keterangan:</h6>
-      <div class="row g-3">
-        <div class="col-md-4">
-          <small class="d-block mb-1"><strong>Skor:</strong> Nilai asli dari penilaian</small>
+            <p class="text-muted small mb-3">
+                <strong>SMART (Simple Multi-Attribute Rating Technique)</strong> adalah metode pengambilan keputusan multi kriteria
+                yang menggunakan pembobotan linear untuk menghitung nilai utilitas setiap alternatif.
+                Skor akhir dihitung dengan rumus:
+            </p>
+
+            {{-- Rumus --}}
+            <div class="mb-3 px-3 py-2" style="border-left:4px solid #2a7a6e; background:#fff; border-radius:0 8px 8px 0;">
+                <div class="fw-bold" style="font-size:1rem;">
+                    Nilai(A) = &Sigma; (W<sub>j</sub> &times; U<sub>j</sub>(A))
+                </div>
+                <small class="text-muted">
+                    dimana W<sub>j</sub> = bobot kriteria j,&nbsp; U<sub>j</sub> = nilai utilitas kriteria j
+                </small>
+            </div>
+
+            {{-- Langkah --}}
+            <div class="row g-2">
+                <div class="col-md-3">
+                    <div class="p-2 rounded text-center h-100" style="background:#fff;border:1px solid #e2e8f0;">
+                        <div class="fw-bold mb-1" style="color:#2a7a6e;">
+                            <span class="badge mb-1" style="background:#2a7a6e;">1</span><br>Input Nilai
+                        </div>
+                        <small class="text-muted">Nilai real tiap kriteria diinput per nasabah</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="p-2 rounded text-center h-100" style="background:#fff;border:1px solid #e2e8f0;">
+                        <div class="fw-bold mb-1" style="color:#2a7a6e;">
+                            <span class="badge mb-1" style="background:#2a7a6e;">2</span><br>Konversi Skor
+                        </div>
+                        <small class="text-muted">Nilai dikonversi ke skor 1–5 berdasarkan parameter</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="p-2 rounded text-center h-100" style="background:#fff;border:1px solid #e2e8f0;">
+                        <div class="fw-bold mb-1" style="color:#2a7a6e;">
+                            <span class="badge mb-1" style="background:#2a7a6e;">3</span><br>Normalisasi
+                        </div>
+                        <small class="text-muted">Skor dinormalisasi: nilai / nilai maks kolom</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="p-2 rounded text-center h-100" style="background:#fff;border:1px solid #e2e8f0;">
+                        <div class="fw-bold mb-1" style="color:#2a7a6e;">
+                            <span class="badge mb-1" style="background:#2a7a6e;">4</span><br>Total Skor
+                        </div>
+                        <small class="text-muted">Norm &times; bobot dijumlahkan → ranking akhir</small>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="col-md-4">
-          <small class="d-block mb-1"><strong>Norm:</strong> Nilai ternormalisasi (0-1)</small>
+
+    @if(isset($selected) && $selected)
+        <!-- Tabel Ranking -->
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th width="80" class="text-center">Rank</th>
+                        <th width="200">Nama Nasabah</th>
+
+                        @foreach($criteria as $c)
+                            <th class="text-center">
+                                <div class="fw-bold">{{ $c->code }}</div>
+                                <small class="text-muted d-block">{{ $c->name }}</small>
+                                <span class="badge bg-secondary mt-1">Bobot: {{ $c->weight }}</span>
+                            </th>
+                        @endforeach
+
+                        <th width="120" class="text-center bg-primary bg-opacity-10">
+                            <i class="fa-solid fa-calculator me-1"></i>
+                            <div class="fw-bold">Total Skor</div>
+                        </th>
+
+                        <th class="text-center">Rekomendasi Pencairan</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                @if(count($results) > 0)
+                    @foreach($results as $i => $r)
+                        <tr>
+
+                            <!-- Rank -->
+                            <td class="text-center">
+                                <span class="fs-5 fw-bold">{{ $i + 1 }}</span>
+                            </td>
+
+                            <!-- Nama Nasabah -->
+                            <td>
+                                <strong>{{ $r['customer']->name }}</strong>
+                            </td>
+
+                            <!-- Detail Kriteria -->
+                            @foreach($criteria as $c)
+                                @php $d = $r['detail'][$c->id]; @endphp
+                                <td class="text-center">
+
+                                    {{-- NILAI REAL --}}
+                                    @if(str_contains(strtolower($c->name), 'keuntungan'))
+
+                                        <div class="small text-muted">
+                                            Untung: Rp {{ number_format($d['keuntungan'] ?? 0, 0, ',', '.') }}
+                                        </div>
+                                        <div class="small text-muted">
+                                            Modal: Rp {{ number_format($d['modal'] ?? 0, 0, ',', '.') }}
+                                        </div>
+                                        <hr class="my-1">
+                                        <div class="fw-bold text-dark">
+                                            {{ number_format($d['real_value'] ?? 0, 1) }} %
+                                        </div>
+
+                                    @else
+
+                                        <div class="fw-semibold">
+                                            {{ number_format($d['real_value'] ?? 0, 0, ',', '.') }}
+                                        </div>
+
+                                    @endif
+
+                                    {{-- SKOR / NORM / WEIGHTED --}}
+                                    <div class="criteria-detail mt-1">
+                                        <div class="d-flex justify-content-between align-items-center mb-1">
+                                            <small class="text-muted">Skor:</small>
+                                            <span class="badge" style="background-color: #91C6BC !important;">
+                                                {{ number_format($d['raw'], 2) }}
+                                            </span>
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center mb-1">
+                                            <small class="text-muted">Norm:</small>
+                                            <span class="badge bg-light text-dark">{{ number_format($d['norm'], 3) }}</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <small class="text-muted">W×N:</small>
+                                            <span class="badge bg-light text-dark">{{ number_format($d['weighted'], 3) }}</span>
+                                        </div>
+                                    </div>
+
+                                </td>
+                            @endforeach
+
+                            <!-- Total -->
+                            <td class="text-center">
+                                <span style="background-color: rgba(145, 198, 188, 0.2); color: #2a7a6e; font-weight: 800; font-size: 1.2rem; padding: 0.4rem 0.85rem; border-radius: 8px; border: 1px solid rgba(145, 198, 188, 0.5);">
+                                    {{ number_format($r['total'], 2) }}
+                                </span>
+                            </td>
+
+                            <!-- Rekomendasi -->
+                            <td class="text-center">
+                                @if($r['rekomendasi'] > 0)
+                                    <span class="fw-bold">
+                                        Rp {{ number_format($r['rekomendasi'], 0, ',', '.') }}
+                                    </span>
+                                @else
+                                    <span class="badge bg-danger">Ditolak</span>
+                                @endif
+                            </td>
+
+                        </tr>
+                    @endforeach
+                @else
+                    <tr>
+                        <td colspan="{{ count($criteria) + 3 }}" class="text-center py-5">
+                            <i class="fa-solid fa-chart-simple mb-3 d-block" style="font-size: 3rem; opacity: 0.3;"></i>
+                            <h6 class="text-muted">Belum ada data penilaian</h6>
+                            <p class="text-muted">Silakan input penilaian terlebih dahulu</p>
+                        </td>
+                    </tr>
+                @endif
+                </tbody>
+
+            </table>
         </div>
-        <div class="col-md-4">
-          <small class="d-block mb-1"><strong>W×N:</strong> Bobot × Normalisasi</small>
+
+        <!-- Legend -->
+        <div class="mt-4 p-3 bg-light rounded">
+            <h6 class="mb-3"><i class="fa-solid fa-circle-info me-2"></i>Keterangan:</h6>
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <small class="d-block mb-1"><strong>Nilai:</strong> Data real hasil input penilaian</small>
+                </div>
+                <div class="col-md-3">
+                    <small class="d-block mb-1"><strong>Skor:</strong> Nilai skor berdasarkan parameter</small>
+                </div>
+                <div class="col-md-3">
+                    <small class="d-block mb-1"><strong>Norm:</strong> Nilai ternormalisasi / utilitas (0-1)</small>
+                </div>
+                <div class="col-md-3">
+                    <small class="d-block mb-1"><strong>W×N:</strong> Bobot × Normalisasi</small>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-@else
-    <!-- Empty State -->
-    <div class="text-center py-5">
-      <div class="empty-state">
-        <i class="fa-solid fa-chart-simple text-muted mb-3" style="font-size: 4rem; opacity: 0.3;"></i>
-        <h5 class="text-muted">Belum ada data yang ditampilkan</h5>
-        <p class="text-muted">Silakan pilih periode terlebih dahulu untuk menampilkan hasil perhitungan SMART</p>
-      </div>
-    </div>
-@endif
+
+    @else
+
+        <!-- Empty State -->
+        <div class="text-center py-5">
+            <i class="fa-solid fa-chart-simple text-muted mb-3 d-block" style="font-size: 4rem; opacity: 0.3;"></i>
+            <h5 class="text-muted">Belum ada data yang ditampilkan</h5>
+            <p class="text-muted">Silakan pilih periode terlebih dahulu untuk menampilkan hasil perhitungan SMART</p>
+        </div>
+
+    @endif
+
 </div>
 @endsection

@@ -1,40 +1,50 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SPK Kelayakan Nasabah</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/logo-bumkalma.png') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="{{ asset('css/auth.css') }}" rel="stylesheet">
 </head>
 <body>
+
+    <!-- Background foto perusahaan (taruh foto di public/images/bg-company.jpg) -->
+    <div class="bg-photo"></div>
+    <div class="bg-overlay"></div>
+
+    <!-- Dekorasi garis tipis kiri & kanan -->
+    <div class="deco-line"></div>
+    <div class="deco-line deco-line-right"></div>
+
+    <!-- Tahun pojok kanan bawah -->
+    <div class="company-year">{{ date('Y') }}</div>
+
+    <!-- Card Login -->
     <div class="login-container">
         <div class="login-card">
+
             <div class="login-header">
-                <div class="neu-icon">
-                    <div class="icon-inner">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                            <circle cx="12" cy="7" r="4"/>
-                        </svg>
-                    </div>
+                <div class="logo-wrap">
+                    <img src="{{ asset('images/logo-bumkalma.png') }}" alt="Logo BUMKalma">
                 </div>
-                <h2>Welcome back</h2>
-                <p>Please sign in to continue</p>
+                <h2>SPK Penentuan Kelayakan Nasabah</h2>
+                <p>Masuk untuk melanjutkan ke sistem</p>
+                <div class="header-rule"></div>
             </div>
 
-            {{-- 🔥 FORM LOGIN BENER --}}
             <form class="login-form" id="loginForm" method="POST" action="{{ route('login.index') }}" novalidate>
                 @csrf
 
                 <div class="form-group">
                     <div class="input-group neu-input">
-                        <input type="email" id="email" name="email" required autocomplete="email" placeholder=" ">
-                        <label for="email">Email address</label>
+                        <input type="email" id="email" name="email"
+                               required autocomplete="email" placeholder=" "
+                               value="{{ old('email') }}">
+                        <label for="email">Alamat Email</label>
                         <div class="input-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                                <polyline points="22,6 12,13 2,6"/>
-                            </svg>
+                            <i class="fa-solid fa-envelope"></i>
                         </div>
                     </div>
                     <span class="error-message" id="emailError"></span>
@@ -42,40 +52,39 @@
 
                 <div class="form-group">
                     <div class="input-group neu-input password-group">
-                        <input type="password" id="password" name="password" required autocomplete="current-password" placeholder=" ">
+                        <input type="password" id="password" name="password"
+                               required autocomplete="current-password" placeholder=" ">
                         <label for="password">Password</label>
                         <div class="input-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                                <path d="M7 11V7a5 5 0 0110 0v4"/>
-                            </svg>
+                            <i class="fa-solid fa-lock"></i>
                         </div>
-                        <button type="button" class="password-toggle neu-toggle" id="passwordToggle">
-                            👁
+                        <button type="button" class="neu-toggle" id="passwordToggle" title="Tampilkan password">
+                            <i class="fa-solid fa-eye" id="toggleIcon"></i>
                         </button>
                     </div>
                     <span class="error-message" id="passwordError"></span>
                 </div>
 
-                <button type="submit" class="neu-button login-btn">
-                    <span class="btn-text">Sign In</span>
+                <button type="submit" class="neu-button">
+                    Masuk
                 </button>
             </form>
 
             @if ($errors->any())
-                <p style="color:red;text-align:center;margin-top:1rem;">
-                    {{ $errors->first() }}
-                </p>
+                <p class="server-error">{{ $errors->first() }}</p>
             @endif
+
         </div>
     </div>
 
     <script>
-        // 🔥 JS CUMA BUAT UI (TIDAK NGE-HANDLE LOGIN)
         document.getElementById('passwordToggle').addEventListener('click', function () {
-            const password = document.getElementById('password');
-            password.type = password.type === 'password' ? 'text' : 'password';
+            const pw = document.getElementById('password');
+            const icon = document.getElementById('toggleIcon');
+            pw.type = pw.type === 'password' ? 'text' : 'password';
+            icon.className = pw.type === 'password' ? 'fa-solid fa-eye' : 'fa-solid fa-eye-slash';
         });
     </script>
+
 </body>
 </html>

@@ -1,144 +1,224 @@
 @extends('layouts.app')
 
 @section('content')
+
 <div class="card card-soft p-4">
+
     <!-- Header -->
-    <div class="d-flex align-items-center mb-4">
-        <div class="icon-circle me-3">
-            <i class="fa-solid fa-user-pen"></i>
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+
+        <!-- Kiri -->
+        <div class="d-flex align-items-center">
+
+            <div class="icon-circle me-3">
+                <i class="fa-solid fa-user-pen"></i>
+            </div>
+
+            <div>
+                <h4 class="mb-1 fw-bold">
+                    Edit Data Nasabah
+                </h4>
+
+                <p class="text-muted mb-0 small">
+                    Perbarui informasi nasabah yang sudah ada
+                </p>
+            </div>
+
         </div>
-        <div>
-            <h4 class="mb-1 fw-bold">Edit Data Nasabah</h4>
-            <p class="text-muted mb-0 small">Perbarui informasi nasabah yang sudah ada</p>
+
+        <!-- Kanan -->
+        <div class="d-flex gap-2 flex-wrap">
+
+            <button type="submit"
+                    form="editForm"
+                    class="btn btn-primary px-3 py-2 fw-semibold">
+
+                <i class="fa-solid fa-save me-1"></i>
+                Update
+
+            </button>
+
+            <button type="reset"
+                    form="editForm"
+                    class="btn btn-outline-secondary px-3 py-2 fw-semibold">
+
+                <i class="fa-solid fa-rotate-left me-1"></i>
+                Reset
+
+            </button>
+
+            <a href="{{ route('customers.index') }}"
+               class="btn btn-outline-secondary px-3 py-2 fw-semibold">
+
+                <i class="fa-solid fa-arrow-left me-1"></i>
+                Kembali
+
+            </a>
+
         </div>
+
     </div>
 
-    <!-- Info Alert -->
+    <!-- Alert -->
     <div class="alert alert-warning d-flex align-items-center mb-4">
+
         <i class="fa-solid fa-triangle-exclamation fs-4 me-3"></i>
+
         <div>
-            <strong>Perhatian:</strong> Pastikan data yang Anda ubah sudah benar sebelum menyimpan.
+            <strong>Perhatian:</strong>
+            Pastikan data yang diubah sudah benar sebelum disimpan.
             <br>
-            <small>Perubahan data akan mempengaruhi riwayat penilaian terkait nasabah ini.</small>
+
+            <small>
+                NIK harus unik dan terdiri dari 16 digit angka.
+            </small>
         </div>
+
     </div>
 
     <!-- Form -->
-    <form action="{{ route('customers.update', $customer->id) }}" method="post" id="editForm">
-        @csrf 
+    <form action="{{ route('customers.update', $customer->id) }}"
+          method="POST"
+          id="editForm">
+
+        @csrf
         @method('PUT')
-        
+
         <div class="row g-4">
-            <!-- Nama Nasabah -->
-            <div class="col-md-12">
+
+            <!-- NIK -->
+            <div class="col-md-6">
+
                 <label class="form-label fw-semibold">
-                    <i class="fa-solid fa-user me-2"></i>Nama Lengkap Nasabah
+                    <i class="fa-solid fa-id-card me-2"></i>
+                    NIK
                     <span class="text-danger">*</span>
                 </label>
-                <input type="text" 
-                       name="name" 
-                       value="{{ $customer->name }}" 
-                       class="form-control form-control-lg" 
+
+                <input type="text"
+                       name="nik"
+                       value="{{ old('nik', $customer->nik) }}"
+                       class="form-control form-control-lg @error('nik') is-invalid @enderror"
+                       placeholder="Masukkan 16 digit NIK"
+                       maxlength="16"
+                       id="nikInput"
+                       oninput="this.value=this.value.replace(/[^0-9]/g,'')"
+                       required>
+
+                @error('nik')
+                    <div class="invalid-feedback">
+                        {{ $message }}
+                    </div>
+                @enderror
+
+                <div class="form-text">
+                    NIK harus unik dan tidak boleh sama
+                </div>
+
+            </div>
+
+            <!-- Nama -->
+            <div class="col-md-6">
+
+                <label class="form-label fw-semibold">
+                    <i class="fa-solid fa-user me-2"></i>
+                    Nama Lengkap Nasabah
+                    <span class="text-danger">*</span>
+                </label>
+
+                <input type="text"
+                       name="name"
+                       value="{{ old('name', $customer->name) }}"
+                       class="form-control form-control-lg @error('name') is-invalid @enderror"
                        placeholder="Contoh: Budi Santoso"
                        id="nameInput"
                        required>
+
+                @error('name')
+                    <div class="invalid-feedback">
+                        {{ $message }}
+                    </div>
+                @enderror
+
                 <div class="form-text">
-                    <i class="fa-solid fa-lightbulb me-1"></i>Masukkan nama lengkap sesuai identitas
+                    Masukkan nama lengkap sesuai identitas
                 </div>
+
             </div>
 
-            <!-- Identifier -->
+            <!-- Alamat -->
             <div class="col-md-6">
+
                 <label class="form-label fw-semibold">
-                    <i class="fa-solid fa-id-card me-2"></i>Email
+                    <i class="fa-solid fa-house me-2"></i>
+                    Alamat
                 </label>
-                <input type="text" 
-                       name="identifier" 
-                       value="{{ $customer->identifier }}" 
-                       class="form-control form-control-lg" 
-                       placeholder="Contoh: adinda@gmail.com"
+
+                <input type="text"
+                       name="identifier"
+                       value="{{ old('identifier', $customer->identifier) }}"
+                       class="form-control form-control-lg"
+                       placeholder="Contoh: Panggang, Giriwungu"
                        id="identifierInput">
+
                 <div class="form-text">
-                    <i class="fa-solid fa-lightbulb me-1"></i>Email unik nasabah (opsional)
+                    Alamat nasabah (opsional)
                 </div>
+
             </div>
 
-            <!-- Nomor Telepon -->
+            <!-- Usaha -->
             <div class="col-md-6">
+
                 <label class="form-label fw-semibold">
-                    <i class="fa-solid fa-phone me-2"></i>Nomor Telepon
+                    <i class="fa-solid fa-briefcase me-2"></i>
+                    Usaha
                 </label>
-                <input type="tel" 
-                       name="phone" 
-                       value="{{ $customer->phone }}" 
-                       class="form-control form-control-lg" 
-                       placeholder="Contoh: 081234567890"
+
+                <input type="text"
+                       name="phone"
+                       value="{{ old('phone', $customer->phone) }}"
+                       class="form-control form-control-lg"
+                       placeholder="Contoh: Petani"
                        id="phoneInput">
+
                 <div class="form-text">
-                    <i class="fa-solid fa-lightbulb me-1"></i>Nomor telepon aktif untuk dihubungi (opsional)
+                    Usaha atau pekerjaan nasabah (opsional)
                 </div>
+
             </div>
+
         </div>
 
-        <!-- Preview Card -->
+        <!-- Info -->
         <div class="mt-4">
-            <label class="form-label fw-semibold">
-                <i class="fa-solid fa-eye me-2"></i>Preview Data Nasabah
-            </label>
-            <div class="preview-card">
-                <div class="preview-avatar" id="previewAvatar">
-                    {{ strtoupper(substr($customer->name, 0, 1)) }}
-                </div>
-                <div class="preview-content">
-                    <h5 class="mb-1" id="previewName">{{ $customer->name }}</h5>
-                    <div class="preview-details">
-                        <span class="preview-item" id="previewIdentifier">
-                            <i class="fa-solid fa-id-card me-1"></i>{{ $customer->identifier ?: '-' }}
-                        </span>
-                        <span class="preview-item" id="previewPhone">
-                            <i class="fa-solid fa-phone me-1"></i>{{ $customer->phone ?: '-' }}
-                        </span>
-                    </div>
-                    <div class="mt-2">
-                        <small class="text-muted">
-                            <i class="fa-solid fa-hashtag me-1"></i>ID: {{ $customer->id }}
-                        </small>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <!-- Change History (Optional) -->
-        <div class="mt-4">
             <div class="info-box">
-                <i class="fa-solid fa-clock-rotate-left me-2"></i>
+
+                <i class="fa-solid fa-clock-rotate-left"></i>
+
                 <div>
-                    <strong>Informasi Nasabah:</strong>
+                    <strong>Informasi Nasabah</strong>
                     <br>
+
                     <small class="text-muted">
-                        Nasabah ini terdaftar sejak {{ $customer->created_at ? $customer->created_at->format('d F Y') : '-' }}
+                        Terdaftar sejak
+                        {{ $customer->created_at ? $customer->created_at->format('d F Y') : '-' }}
                     </small>
+
                 </div>
+
             </div>
+
         </div>
 
-        <!-- Buttons -->
-        <div class="d-flex gap-2 mt-4">
-            <button type="submit" class="btn btn-primary btn-lg">
-                <i class="fa-solid fa-save me-2"></i>Update Data
-            </button>
-            <button type="reset" class="btn btn-outline-secondary btn-lg">
-                <i class="fa-solid fa-rotate-left me-2"></i>Reset
-            </button>
-            <a href="{{ route('customers.index') }}" class="btn btn-outline-secondary btn-lg">
-                <i class="fa-solid fa-arrow-left me-2"></i>Kembali
-            </a>
-        </div>
     </form>
+
 </div>
 
 <style>
-/* Icon Circle */
+
+/* Icon */
 .icon-circle {
     width: 56px;
     height: 56px;
@@ -148,283 +228,167 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.5rem;
+    font-size: 1.4rem;
 }
 
-/* Form Controls */
+/* Input */
 .form-control-lg {
     border-radius: 12px;
-    padding: 0.875rem 1rem;
-    font-size: 1rem;
+    padding: 0.85rem 1rem;
     border: 2px solid #e9ecef;
-    transition: all 0.2s ease;
+    transition: 0.2s ease;
 }
 
 .form-control-lg:focus {
     border-color: #f59e0b;
-    box-shadow: 0 0 0 0.25rem rgba(245, 158, 11, 0.15);
-}
-
-.form-label {
-    margin-bottom: 0.5rem;
-    color: #495057;
-}
-
-.form-text {
-    font-size: 0.875rem;
-    margin-top: 0.5rem;
-}
-
-/* Preview Card */
-.preview-card {
-    background: linear-gradient(135deg, rgba(245, 158, 11, 0.05), rgba(245, 158, 11, 0.1));
-    border: 2px solid #f59e0b;
-    border-radius: 16px;
-    padding: 2rem;
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-    transition: all 0.3s ease;
-}
-
-.preview-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
-}
-
-.preview-avatar {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #f59e0b, #ef4444);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2rem;
-    font-weight: bold;
-    flex-shrink: 0;
-}
-
-.preview-content {
-    flex: 1;
-}
-
-.preview-content h5 {
-    color: #f59e0b;
-    font-weight: 700;
-}
-
-.preview-details {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    margin-top: 0.5rem;
-}
-
-.preview-item {
-    font-size: 0.875rem;
-    color: #6c757d;
-    display: flex;
-    align-items: center;
+    box-shadow: 0 0 0 0.25rem rgba(245,158,11,.15);
 }
 
 /* Info Box */
 .info-box {
     background: #f8f9fa;
     border-left: 4px solid #6c757d;
-    border-radius: 8px;
-    padding: 1rem 1.5rem;
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.75rem;
 }
 
 .info-box i {
-    font-size: 1.25rem;
+    font-size: 1.2rem;
     color: #6c757d;
-}
-
-/* Buttons */
-.btn-lg {
-    padding: 0.75rem 2rem;
-    font-weight: 600;
-    border-radius: 10px;
 }
 
 /* Alert */
 .alert {
-    border-radius: 12px;
+    border-radius: 14px;
     border: none;
+}
+
+/* Button */
+.btn {
+    border-radius: 10px;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
+
     .icon-circle {
         width: 48px;
         height: 48px;
-        font-size: 1.25rem;
+        font-size: 1.2rem;
     }
-    
-    .preview-card {
-        flex-direction: column;
-        text-align: center;
-        padding: 1.5rem;
-    }
-    
-    .preview-avatar {
-        width: 64px;
-        height: 64px;
-        font-size: 1.5rem;
-    }
-    
-    .preview-details {
-        justify-content: center;
-    }
-    
-    .d-flex.gap-2 {
-        flex-direction: column;
-    }
-    
+
     .d-flex.gap-2 .btn {
         width: 100%;
     }
-    
+
     .info-box {
         flex-direction: column;
         text-align: center;
     }
+
 }
+
 </style>
 
 @push('scripts')
+
 <script>
-// Form inputs
+
+// Inputs
+const nikInput = document.getElementById('nikInput');
 const nameInput = document.getElementById('nameInput');
 const identifierInput = document.getElementById('identifierInput');
 const phoneInput = document.getElementById('phoneInput');
 
-// Preview elements
-const previewName = document.getElementById('previewName');
-const previewIdentifier = document.getElementById('previewIdentifier');
-const previewPhone = document.getElementById('previewPhone');
-const previewAvatar = document.getElementById('previewAvatar');
-
-// Store original values
+// Original values
+const originalNik = nikInput.value;
 const originalName = nameInput.value;
 const originalIdentifier = identifierInput.value;
 const originalPhone = phoneInput.value;
 
-// Update preview name
-nameInput.addEventListener('input', function() {
-    const name = this.value.trim();
-    if (name) {
-        previewName.textContent = name;
-        previewAvatar.textContent = name.charAt(0).toUpperCase();
-    } else {
-        previewName.textContent = 'Nama Nasabah';
-        previewAvatar.innerHTML = '<i class="fa-solid fa-user"></i>';
-    }
-});
-
-// Update preview identifier
-identifierInput.addEventListener('input', function() {
-    const identifier = this.value.trim();
-    previewIdentifier.innerHTML = identifier 
-        ? `<i class="fa-solid fa-id-card me-1"></i>${identifier}` 
-        : '<i class="fa-solid fa-id-card me-1"></i>-';
-});
-
-// Update preview phone
-phoneInput.addEventListener('input', function() {
-    let phone = this.value.trim();
-    
-    // Format phone number (optional)
-    phone = phone.replace(/\D/g, '');
-    
-    previewPhone.innerHTML = phone 
-        ? `<i class="fa-solid fa-phone me-1"></i>${phone}` 
-        : '<i class="fa-solid fa-phone me-1"></i>-';
-});
-
-// Phone number validation (only allow numbers)
-phoneInput.addEventListener('keypress', function(e) {
-    if (!/[0-9]/.test(e.key) && e.key !== 'Backspace') {
-        e.preventDefault();
-    }
-});
-
-// Check for changes
+// Check changes
 function hasChanges() {
-    return nameInput.value !== originalName || 
-           identifierInput.value !== originalIdentifier || 
+
+    return nikInput.value !== originalNik ||
+           nameInput.value !== originalName ||
+           identifierInput.value !== originalIdentifier ||
            phoneInput.value !== originalPhone;
+
 }
 
-// Form validation
-document.getElementById('editForm').addEventListener('submit', function(e) {
+// Validation
+document.getElementById('editForm')
+.addEventListener('submit', function(e) {
+
+    const nik = nikInput.value.trim();
     const name = nameInput.value.trim();
-    
+
+    if (!nik) {
+        e.preventDefault();
+        alert('NIK wajib diisi!');
+        nikInput.focus();
+        return false;
+    }
+
+    if (nik.length !== 16) {
+        e.preventDefault();
+        alert('NIK harus 16 digit!');
+        nikInput.focus();
+        return false;
+    }
+
     if (!name) {
         e.preventDefault();
         alert('Nama nasabah wajib diisi!');
         nameInput.focus();
         return false;
     }
-    
+
     if (name.length < 3) {
         e.preventDefault();
-        alert('Nama nasabah minimal 3 karakter!');
+        alert('Nama minimal 3 karakter!');
         nameInput.focus();
         return false;
     }
-    
+
     if (!hasChanges()) {
         e.preventDefault();
-        alert('Tidak ada perubahan data yang dilakukan.');
+        alert('Tidak ada perubahan data.');
         return false;
     }
-    
-    // Confirm before submit
-    if (!confirm(`Update data nasabah "${name}"?\n\nPerubahan akan disimpan ke database.`)) {
+
+    if (!confirm(`Update data nasabah "${name}"?`)) {
         e.preventDefault();
         return false;
     }
+
 });
 
-// Reset form handler
-document.querySelector('button[type="reset"]').addEventListener('click', function(e) {
+// Reset
+document.querySelector('button[type="reset"]')
+.addEventListener('click', function(e) {
+
     if (!confirm('Reset form ke data awal?')) {
         e.preventDefault();
-        return false;
     }
-    
-    // Restore original values
-    setTimeout(() => {
-        nameInput.value = originalName;
-        identifierInput.value = originalIdentifier;
-        phoneInput.value = originalPhone;
-        
-        // Update preview
-        previewName.textContent = originalName;
-        previewAvatar.textContent = originalName.charAt(0).toUpperCase();
-        previewIdentifier.innerHTML = originalIdentifier 
-            ? `<i class="fa-solid fa-id-card me-1"></i>${originalIdentifier}` 
-            : '<i class="fa-solid fa-id-card me-1"></i>-';
-        previewPhone.innerHTML = originalPhone 
-            ? `<i class="fa-solid fa-phone me-1"></i>${originalPhone}` 
-            : '<i class="fa-solid fa-phone me-1"></i>-';
-    }, 10);
+
 });
 
-// Warn before leaving with unsaved changes
+// Warning leave page
 window.addEventListener('beforeunload', function(e) {
+
     if (hasChanges()) {
         e.preventDefault();
         e.returnValue = '';
     }
+
 });
+
 </script>
+
 @endpush
 
 @endsection

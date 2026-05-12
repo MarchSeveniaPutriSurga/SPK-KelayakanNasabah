@@ -1,15 +1,10 @@
 @extends('layouts.app')
 
 @section('content')
-<link rel="stylesheet" href="{{ asset('css/dashboard-style.css') }}">
-
 <div class="dashboard-container">
     <!-- Welcome Header -->
     <div class="welcome-banner card-soft mb-4">
         <div class="welcome-content">
-            <div class="welcome-icon">
-                <i class="fa-solid fa-chart-line"></i>
-            </div>
             <div class="welcome-text">
                 <h2 class="welcome-title">Dashboard </h2>
                 <p class="welcome-subtitle">Sistem Pendukung Keputusan Penentuan Kelayakan Nasabah untuk Pinjaman Lanjutan</p>
@@ -59,7 +54,7 @@
             <div class="stat-details">
                 <span class="stat-label">Total Nasabah</span>
                 <h3 class="stat-value">{{ $totalCustomers }}</h3>
-                <div class="stat-info">
+                <div class="stat-meta">
                     <i class="fa-solid fa-user-plus"></i>
                     <span>Data Master</span>
                 </div>
@@ -74,17 +69,21 @@
         <div class="stat-card stat-info">
             <div class="stat-icon-wrapper">
                 <div class="stat-icon">
-                    <i class="fa-solid fa-user-check"></i>
+                    <i class="fa-solid fa-list-check"></i>
                 </div>
             </div>
             <div class="stat-details">
                 <span class="stat-label">Nasabah Dinilai</span>
                 <h3 class="stat-value">{{ $assessedCustomers }}</h3>
-                <div class="stat-info">
-                    <i class="fa-solid fa-calendar"></i>
+                <div class="stat-meta">
+                    <i class="fa-solid fa-chart-simple"></i>
                     <span>Periode Ini</span>
                 </div>
             </div>
+            <a href="{{ route('smart.index') }}" class="stat-action">
+                <span>Lihat</span>
+                <i class="fa-solid fa-arrow-right"></i>
+            </a>
         </div>
 
         <!-- Total Kriteria -->
@@ -97,7 +96,7 @@
             <div class="stat-details">
                 <span class="stat-label">Total Kriteria</span>
                 <h3 class="stat-value">{{ $totalCriteria }}</h3>
-                <div class="stat-info">
+                <div class="stat-meta">
                     <i class="fa-solid fa-chart-simple"></i>
                     <span>Aktif</span>
                 </div>
@@ -118,7 +117,7 @@
             <div class="stat-details">
                 <span class="stat-label">Total Periode</span>
                 <h3 class="stat-value">{{ $totalPeriods }}</h3>
-                <div class="stat-info">
+                <div class="stat-meta">
                     <i class="fa-solid fa-check-circle"></i>
                     <span>Terdaftar</span>
                 </div>
@@ -183,47 +182,8 @@
             </div>
         </div>
 
-        <!-- Donut Chart - Distribusi Kategori -->
-        <div class="chart-card">
-            <div class="card-header-custom">
-                <div class="header-left">
-                    <div class="header-icon">
-                        <i class="fa-solid fa-chart-pie"></i>
-                    </div>
-                    <div>
-                        <h5 class="card-title-custom">Distribusi Kategori Nasabah</h5>
-                        <p class="card-subtitle">Klasifikasi berdasarkan skor SMART</p>
-                    </div>
-                </div>
-            </div>
-            <div class="card-body-custom">
-                @if(isset($donutValues) && array_sum($donutValues) > 0)
-                    <div class="chart-wrapper">
-                        <canvas id="categoryDonutChart"></canvas>
-                    </div>
-                    <div class="chart-legend-grid">
-                        @foreach($donutLabels as $index => $label)
-                            <div class="legend-item">
-                                <span class="legend-color legend-color-{{ $index }}"></span>
-                                <div class="legend-details">
-                                    <span class="legend-label">{{ $label }}</span>
-                                    <span class="legend-value">{{ $donutValues[$index] }} Nasabah</span>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                @else
-                    <div class="empty-state">
-                        <i class="fa-solid fa-chart-pie"></i>
-                        <h6>Belum Ada Data</h6>
-                        <p>Pilih periode untuk melihat distribusi</p>
-                    </div>
-                @endif
-            </div>
-        </div>
-
         <!-- Bar Chart - Rata-rata Skor per Kriteria -->
-        <div class="chart-card chart-card-wide">
+        <div class="chart-card">
             <div class="card-header-custom">
                 <div class="header-left">
                     <div class="header-icon">
@@ -466,8 +426,8 @@ if (barCtx) {
             datasets: [{
                 label: 'Rata-rata Skor',
                 data: {!! json_encode($criteriaAvgScores) !!},
-                backgroundColor: 'rgba(99, 102, 241, 0.8)',
-                borderColor: 'rgba(99, 102, 241, 1)',
+                backgroundColor: 'rgba(88, 180, 204, 0.8)',
+                borderColor: 'rgba(88, 180, 204, 1)',
                 borderWidth: 2,
                 borderRadius: 8,
             }]
