@@ -6,7 +6,7 @@
     <title>SPK Kelayakan Nasabah</title>
     <link rel="icon" type="image/png" href="{{ asset('images/logo-bumkalma.png') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link href="{{ asset('css/auth.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/auth2.css') }}" rel="stylesheet">
 </head>
 <body>
 

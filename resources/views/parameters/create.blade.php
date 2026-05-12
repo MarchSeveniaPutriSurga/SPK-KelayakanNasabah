@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-<link rel="stylesheet" href="{{ asset('css/parameters-style.css') }}">
 
 <div class="card card-soft p-4">
     <!-- Header -->
