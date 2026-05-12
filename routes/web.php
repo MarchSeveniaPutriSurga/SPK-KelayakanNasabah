@@ -38,4 +38,8 @@ Route::middleware(['auth'])->group(function () {
 
     // SMART ranking
     Route::get('smart', [SmartController::class, 'index'])->name('smart.index');
+
+    //Riwayat Penilaian
+    Route::get('/riwayat-penilaian', [PenilaianController::class, 'riwayat'])
+        ->name('penilaian.riwayat');
 });

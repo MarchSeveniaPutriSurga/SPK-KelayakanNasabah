@@ -18,14 +18,6 @@
     <div class="deco-line"></div>
     <div class="deco-line deco-line-right"></div>
 
-    <!-- Nama perusahaan pojok kiri atas -->
-    {{-- <div class="company-watermark">
-        <div class="wm-logo">
-            <img src="{{ asset('images/logo-bumkalma.png') }}" alt="Logo">
-        </div>
-        <span>BUMKalma</span>
-    </div> --}}
-
     <!-- Tahun pojok kanan bawah -->
     <div class="company-year">{{ date('Y') }}</div>
 
