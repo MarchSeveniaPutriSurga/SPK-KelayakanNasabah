@@ -4,39 +4,53 @@
 
 <div class="card card-soft p-4">
 
-    {{-- HEADER --}}
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h4 class="mb-1 fw-bold">
-                Riwayat Penilaian
-            </h4>
-            <p class="text-muted mb-0 small">
-                Riwayat hasil penilaian dan perhitungan SMART
-            </p>
-        </div>
-    </div>
+   {{-- TOP BAR (FILTER + EXPORT) --}}
+    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-3">
 
-    {{-- FILTER PERIODE --}}
-    <form method="GET" action="{{ route('penilaian.riwayat') }}" class="mb-4">
-        <div class="row g-3 align-items-end">
-            <div class="col-md-5">
-                <label class="form-label fw-semibold">
+        {{-- FILTER --}}
+        <form method="GET" action="{{ route('penilaian.riwayat') }}" class="d-flex align-items-end gap-2">
+
+            <div>
+                <label class="form-label fw-semibold mb-1">
                     Periode Penilaian
                 </label>
+
                 <select name="period_id"
                         class="form-select"
                         onchange="this.form.submit()">
+
                     @foreach($periods as $p)
                         <option value="{{ $p->id }}"
                             {{ $selected == $p->id ? 'selected' : '' }}>
-                            {{ $p->label }}
-                            {{ $p->is_active ? '(Aktif)' : '' }}
+                            {{ $p->label }} {{ $p->is_active ? '(Aktif)' : '' }}
                         </option>
                     @endforeach
+
                 </select>
             </div>
-        </div>
-    </form>
+
+        </form>
+
+        {{-- EXPORT BUTTON --}}
+        @if(count($results) > 0)
+            <div class="d-flex gap-2">
+
+                <a href="{{ route('smart.export.excel') }}"
+                class="btn btn-success">
+                    <i class="fa-solid fa-file-excel me-1"></i>
+                    Excel
+                </a>
+
+                <a href="{{ route('smart.export.pdf') }}"
+                class="btn btn-danger">
+                    <i class="fa-solid fa-file-pdf me-1"></i>
+                    PDF
+                </a>
+
+            </div>
+        @endif
+
+    </div>
 
     {{-- INFO --}}
     <div class="alert alert-info d-flex align-items-center mb-4">
