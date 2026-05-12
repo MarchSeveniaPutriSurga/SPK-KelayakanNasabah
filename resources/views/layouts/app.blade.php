@@ -30,67 +30,84 @@
 <div class="sidebar" id="sidebar">
   <div class="sidebar-brand">
       <img src="{{ asset('images/logo-bumkalma.png') }}" alt="Logo" style="width: 75px; height: 75px; object-fit: contain; display: block; margin: 0 auto 0.75rem;">
-      <h6> SPK Penentuan Kelayakan Nasabah </h6>
+      <h6>SPK Penentuan Kelayakan Nasabah</h6>
   </div>
-  
+
   <ul class="sidebar-menu">
+
+    {{-- UTAMA --}}
+    <li class="sidebar-group-label">MAIN MENU</li>
+
     <li>
       <a href="{{ route('dashboard') }}" class="{{ Request::is('dashboard') ? 'active' : '' }}">
         <i class="fa-solid fa-chart-line"></i>
-        <span style="color: #212529 !important;">Dashboard</span>
+        <span>Dashboard</span>
       </a>
     </li>
-    <li>
-      <a href="{{ route('smart.index') }}" class="{{ Request::routeIs('smart.index') ? 'active' : '' }}">
-        <i class="fa-solid fa-ranking-star"></i>
-        <span style="color: #212529 !important;">Ranking</span>
-      </a>
-    </li>
-    <li>
-      <a href="{{ route('penilaian.riwayat') }}" class="{{ Request::routeIs('penilaian.riwayat') ? 'active' : '' }}">
-        <i class="fa-solid fa-clock-rotate-left"></i>
-        <span style="color: #212529 !important;">Riwayat</span>
-      </a>
-    </li>
-    <li>
-      <a href="{{ route('penilaian.create') }}" class="{{ Request::routeIs('penilaian.create') ? 'active' : '' }}">
-        <i class="fa-solid fa-file-pen"></i>
-        <span style="color: #212529 !important;">Penilaian</span>
-      </a>
-    </li>
+
+    {{-- DATA MASTER --}}
+    <li class="sidebar-group-label">Data Master</li>
+
     <li>
       <a href="{{ route('customers.index') }}" class="{{ Request::routeIs('customers.*') ? 'active' : '' }}">
         <i class="fa-solid fa-users"></i>
-        <span style="color: #212529 !important;">Nasabah</span>
+        <span>Nasabah</span>
       </a>
     </li>
     <li>
       <a href="{{ route('periods.index') }}" class="{{ Request::routeIs('periods.*') ? 'active' : '' }}">
         <i class="fa-solid fa-calendar-days"></i>
-        <span style="color: #212529 !important;">Periode</span>
+        <span>Periode</span>
       </a>
     </li>
     <li>
       <a href="{{ route('criteria.index') }}" class="{{ Request::routeIs('criteria.*') ? 'active' : '' }}">
         <i class="fa-solid fa-list-check"></i>
-        <span style="color: #212529 !important;">Kriteria</span>
+        <span>Kriteria</span>
       </a>
     </li>
     <li>
       <a href="{{ route('parameters.index') }}" class="{{ Request::routeIs('parameters.*') ? 'active' : '' }}">
         <i class="fa-solid fa-sliders"></i>
-        <span style="color: #212529 !important;">Parameter</span>
+        <span>Parameter</span>
       </a>
     </li>
+
+    {{-- SPK --}}
+    <li class="sidebar-group-label">SPK SYSTEM</li>
+
+    <li>
+      <a href="{{ route('penilaian.create') }}" class="{{ Request::routeIs('penilaian.create') ? 'active' : '' }}">
+        <i class="fa-solid fa-file-pen"></i>
+        <span>Penilaian</span>
+      </a>
+    </li>
+    <li>
+      <a href="{{ route('smart.index') }}" class="{{ Request::routeIs('smart.index') ? 'active' : '' }}">
+        <i class="fa-solid fa-ranking-star"></i>
+        <span>Hasil Ranking</span>
+      </a>
+    </li>
+    <li>
+      <a href="{{ route('penilaian.riwayat') }}" class="{{ Request::routeIs('penilaian.riwayat') ? 'active' : '' }}">
+        <i class="fa-solid fa-clock-rotate-left"></i>
+        <span>Riwayat Penilaian</span>
+      </a>
+    </li>
+
+    {{-- AKUN --}}
+    <li class="sidebar-group-label">Akun</li>
+
     <li>
       <form method="POST" action="{{ route('logout') }}">
         @csrf
         <button type="submit">
           <i class="fa-solid fa-arrow-right-from-bracket"></i>
-          <span style="color: #212529 !important;">Logout</span>
+          <span>Logout</span>
         </button>
       </form>
     </li>
+
   </ul>
 </div>
 
@@ -119,16 +136,13 @@
   function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('sidebarOverlay');
-    
     sidebar.classList.toggle('show');
     overlay.classList.toggle('show');
   }
-  
-  // Close sidebar when clicking outside on mobile
+
   document.addEventListener('click', function(e) {
     const sidebar = document.getElementById('sidebar');
     const toggle = document.querySelector('.mobile-toggle');
-    
     if (window.innerWidth <= 768) {
       if (!sidebar.contains(e.target) && !toggle.contains(e.target)) {
         sidebar.classList.remove('show');

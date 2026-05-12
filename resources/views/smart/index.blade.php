@@ -32,6 +32,22 @@
             </div>
         </div>
 
+        <!-- Tombol Export -->
+        @if(count($results) > 0)
+        <div class="d-flex gap-2 justify-content-end mb-3">
+            <a href="{{ route('smart.export.excel') }}"
+              class="btn btn-sm btn-success"
+              title="Export ke Excel">
+                <i class="fa-solid fa-file-excel me-1"></i> Export Excel
+            </a>
+            <a href="{{ route('smart.export.pdf') }}"
+              class="btn btn-sm btn-danger"
+              title="Export ke PDF">
+                <i class="fa-solid fa-file-pdf me-1"></i> Export PDF
+            </a>
+        </div>
+        @endif
+
         <!-- Tabel Ranking -->
         <div class="table-responsive">
             <table class="table table-hover align-middle">

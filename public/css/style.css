@@ -42,6 +42,17 @@ body {
     transition: all 0.3s ease;
 }
 
+.sidebar-group-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #aaa;
+    padding: 14px 20px 4px;
+    list-style: none;
+    pointer-events: none;
+}
+
 .sidebar::-webkit-scrollbar {
     width: 6px;
 }
