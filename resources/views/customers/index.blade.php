@@ -59,6 +59,9 @@
                     <tr>
                         <th width="60" class="text-center">#</th>
                         <th>
+                            <i class="fa-solid fa-id-card"></i> NIK
+                        </th>
+                        <th>
                             <i class="fa-solid fa-user me-1"></i>Nama Nasabah
                         </th>
                         <th width="200">
@@ -79,10 +82,10 @@
                             <div class="number-badge">{{ $index + 1 }}</div>
                         </td>
                         <td>
+                            <strong>{{ $c->nik }}</strong>
+                        </td>
+                        <td>
                             <div class="d-flex align-items-center">
-                                {{-- <div class="avatar-circle me-2">
-                                    {{ strtoupper(substr($c->name, 0, 1)) }}
-                                </div> --}}
                                 <div>
                                     <strong class="d-block">{{ $c->name }}</strong>
                                     <small class="text-muted">Nasabah #{{ $c->id }}</small>
