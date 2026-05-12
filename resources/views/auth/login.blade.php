@@ -87,14 +87,4 @@
     </script>
 
 </body>
-</html>-solid fa-eye' : 'fa-solid fa-eye-slash';
-        });
-    </script>
-
-</body>
-</html>-solid fa-eye' : 'fa-solid fa-eye-slash';
-        });
-    </script>
-
-</body>
 </html>
