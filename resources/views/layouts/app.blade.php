@@ -47,7 +47,13 @@
       </a>
     </li>
     <li>
-      <a href="{{ route('penilaian.create') }}" class="{{ Request::routeIs('penilaian.*') ? 'active' : '' }}">
+      <a href="{{ route('penilaian.riwayat') }}" class="{{ Request::routeIs('penilaian.riwayat') ? 'active' : '' }}">
+        <i class="fa-solid fa-ranking-star"></i>
+        <span style="color: #212529 !important;">Riwayat</span>
+      </a>
+    </li>
+    <li>
+      <a href="{{ route('penilaian.create') }}" class="{{ Request::routeIs('penilaian.create') ? 'active' : '' }}">
         <i class="fa-solid fa-file-pen"></i>
         <span style="color: #212529 !important;">Penilaian</span>
       </a>

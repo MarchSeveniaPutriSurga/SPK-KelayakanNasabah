@@ -126,4 +126,119 @@ class PenilaianController extends Controller
             ->route('smart.index', ['period_id' => $period->id])
             ->with('success', 'Penilaian berhasil disimpan');
     }
+
+    public function riwayat(Request $request)
+    {
+        $periods = Period::all();
+
+        $selected = $request->period_id
+            ?? Period::where('is_active', true)->value('id');
+
+        $selectedPeriod = Period::find($selected);
+
+        $criteria = Criterion::orderBy('id')->get();
+
+        $evaluations = Evaluation::with(['customer', 'criterion'])
+            ->where('period_id', $selected)
+            ->get();
+
+        $data = [];
+
+        // =========================
+        // GROUPING DATA
+        // =========================
+        foreach ($evaluations as $ev) {
+            $data[$ev->customer_id]['customer'] = $ev->customer->name;
+            $data[$ev->customer_id]['values'][$ev->criterion_id] = [
+                'real_value' => $ev->real_value,
+                'score'      => $ev->score,
+                'keuntungan' => $ev->keuntungan,
+                'modal'      => $ev->modal,
+            ];
+        }
+
+        // =========================
+        // BUILD RAW MATRIX (per kriteria → semua customer)
+        // sama persis dengan SmartController
+        // =========================
+        $rawMatrix = [];
+        foreach ($data as $customerId => $row) {
+            foreach ($criteria as $criterion) {
+                $rawMatrix[$criterion->id][$customerId] = $row['values'][$criterion->id]['score'] ?? 0;
+            }
+        }
+
+        // =========================
+        // HITUNG SMART
+        // formula sama dengan SmartController: norm = raw / max kolom
+        // =========================
+        $results = [];
+
+        foreach ($data as $customerId => $row) {
+
+            $total = 0;
+
+            foreach ($criteria as $criterion) {
+
+                $raw          = $rawMatrix[$criterion->id][$customerId] ?? 0;
+                $columnValues = array_values($rawMatrix[$criterion->id]);
+                $maxVal       = max($columnValues);
+
+                $norm     = $maxVal > 0 ? $raw / $maxVal : 0;
+                $weighted = $norm * $criterion->weight;
+
+                $total += $weighted;
+            }
+
+            $results[] = [
+                'customer_id' => $customerId,
+                'customer'    => $row['customer'],
+                'values'      => $row['values'],
+                'smart_score' => round($total, 4),
+            ];
+        }
+
+        // =========================
+        // SORT RANKING
+        // =========================
+        usort($results, function ($a, $b) {
+            return $b['smart_score'] <=> $a['smart_score'];
+        });
+
+        // =========================
+        // RANKING & REKOMENDASI
+        // =========================
+        $maxScore = $results[0]['smart_score'] ?? 1;
+
+        foreach ($results as $index => &$r) {
+
+            $r['ranking'] = $index + 1;
+
+            $quota = $selectedPeriod->quota_lolos ?? 0;
+
+            $r['status'] = ($r['ranking'] <= $quota)
+                ? 'Layak Lanjut'
+                : 'Tidak Layak';
+
+            // Rekomendasi pencairan: proporsional terhadap nilai pengajuan
+            $pengajuan = Evaluation::where('customer_id', $r['customer_id'])
+                ->where('period_id', $selected)
+                ->whereHas('criterion', function ($q) {
+                    $q->where('name', 'like', '%pengajuan%');
+                })
+                ->value('real_value') ?? 0;
+
+            $ratio = $maxScore > 0 ? $r['smart_score'] / $maxScore : 0;
+
+            $r['rekomendasi'] = round($ratio * $pengajuan);
+        }
+
+        return view('penilaian.riwayat', compact(
+            'periods',
+            'selected',
+            'selectedPeriod',
+            'criteria',
+            'results'
+        ));
+    }
 }
