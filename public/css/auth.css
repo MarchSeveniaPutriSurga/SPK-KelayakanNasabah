@@ -21,7 +21,7 @@ body {
 .bg-photo {
     position: fixed;
     inset: 0;
-    background-image: url('/images/bg-company.jpeg');
+    background-image: url('../images/bg-company.jpeg');
     background-size: cover;
     background-position: center;
     filter: brightness(0.35) saturate(0.8);
