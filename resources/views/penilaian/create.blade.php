@@ -62,22 +62,6 @@
 
             <input type="hidden" name="period_id" value="{{ $selected }}">
 
-            <!-- Quota Lolos -->
-            <div class="mb-4">
-                <label class="form-label fw-semibold">
-                    <i class="fa-solid fa-check-to-slot me-2"></i>Jumlah Nasabah Layak Lanjut
-                </label>
-                <input type="number"
-                    name="quota_lolos"
-                    class="form-control"
-                    min="1"
-                    placeholder="Contoh: 10"
-                    value="{{ $periods->firstWhere('id', $selected)->quota_lolos ?? '' }}">
-                <small class="text-muted">
-                    Nasabah dengan peringkat 1 sampai nilai ini akan berstatus <b>Layak Lanjut</b>
-                </small>
-            </div>
-
             <!-- Tabel Penilaian -->
             <div class="table-responsive">
                 <table class="table table-hover align-middle penilaian-table">

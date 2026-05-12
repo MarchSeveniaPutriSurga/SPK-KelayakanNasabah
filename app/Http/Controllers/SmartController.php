@@ -127,19 +127,19 @@ class SmartController extends Controller
         usort($results, fn($a, $b) => $b['total'] <=> $a['total']);
 
         // --- 4. Tentukan status kelayakan berdasarkan quota_lolos ---
-        $quota = $period->quota_lolos ?? null;
+        // $quota = $period->quota_lolos ?? null;
 
-        if ($quota) {
-            foreach ($results as $i => &$r) {
-                $r['status'] = ($i + 1 <= $quota)
-                    ? 'Layak Lanjut'
-                    : 'Tidak Layak';
-            }
-        } else {
-            foreach ($results as &$r) {
-                $r['status'] = '-';
-            }
-        }
+        // if ($quota) {
+        //     foreach ($results as $i => &$r) {
+        //         $r['status'] = ($i + 1 <= $quota)
+        //             ? 'Layak Lanjut'
+        //             : 'Tidak Layak';
+        //     }
+        // } else {
+        //     foreach ($results as &$r) {
+        //         $r['status'] = '-';
+        //     }
+        // }
 
         $maxScore = $results[0]['total'] ?? 1;
 

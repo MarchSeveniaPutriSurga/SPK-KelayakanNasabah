@@ -57,7 +57,6 @@ class PenilaianController extends Controller
     {
         $request->validate([
             'period_id'   => 'required',
-            'quota_lolos' => 'nullable|integer|min:1',
             'checked'     => 'nullable|array',
             'values'      => 'array',
             'keuntungan'  => 'array',
@@ -65,10 +64,6 @@ class PenilaianController extends Controller
         ]);
 
         $period = Period::findOrFail($request->period_id);
-
-        if ($request->filled('quota_lolos')) {
-            $period->update(['quota_lolos' => $request->quota_lolos]);
-        }
 
         $checkedCustomers = $request->checked ?? [];
 
@@ -129,6 +124,6 @@ class PenilaianController extends Controller
 
         return redirect()
             ->route('smart.index', ['period_id' => $period->id])
-            ->with('success', 'Penilaian & quota lolos berhasil disimpan');
+            ->with('success', 'Penilaian berhasil disimpan');
     }
 }

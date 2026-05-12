@@ -52,9 +52,6 @@
               <i class="fa-solid fa-calculator me-1"></i>
               <div class="fw-bold">Total Skor</div>
             </th>
-            <th width="160" class="text-center">
-              <i class="fa-solid fa-circle-check me-1"></i>Status
-            </th>
             <th>Rekomendasi Pencairan</th>
           </tr>
         </thead>
@@ -101,20 +98,6 @@
                         {{ number_format($r['total'], 3) }}
                     </span>
                 </td>
-
-                <td class="text-center">
-                  @if($r['status'] === 'Layak Lanjut')
-                    <span class="badge bg-success">
-                      <i class="fa-solid fa-check me-1"></i>Layak Lanjut
-                    </span>
-                  @elseif($r['status'] === 'Tidak Layak')
-                    <span class="badge bg-danger">
-                      <i class="fa-solid fa-xmark me-1"></i>Tidak Layak
-                    </span>
-                  @else
-                    <span class="badge bg-secondary">-</span>
-                  @endif
-                </td>
                 <td>
                     Rp {{ number_format($r['rekomendasi'], 0, ',', '.') }}
                 </td>
@@ -122,7 +105,7 @@
             @endforeach
           @else
             <tr>
-              <td colspan="{{ count($criteria) + 4 }}" class="text-center py-5">
+              <td colspan="{{ count($criteria) + 3 }}" class="text-center py-5">
                 <div class="empty-state">
                   <i class="fa-solid fa-chart-simple text-muted mb-3" style="font-size: 3rem; opacity: 0.3;"></i>
                   <h6 class="text-muted">Belum ada data penilaian</h6>
