@@ -50,11 +50,20 @@
                 <label class="form-label fw-semibold">Kriteria</label>
                 <select name="criterion_id" class="form-select form-select-lg" required>
                     @foreach($criteria as $c)
-                        <option value="{{ $c->id }}" {{ $parameter->criterion_id == $c->id ? 'selected' : '' }}>
-                            {{ $c->code }} - {{ $c->name }}
+                        <option value="{{ $c->id }}"
+                                data-type="{{ $c->type }}"
+                                {{ $parameter->criterion_id == $c->id ? 'selected' : '' }}>
+                            {{ $c->code }} - {{ $c->name }} ({{ ucfirst($c->type) }})
                         </option>
                     @endforeach
                 </select>
+
+                <div class="mt-2" id="criterionTypeInfo">
+                    <span class="badge bg-info text-dark">
+                        Jenis Kriteria: <span id="criterionTypeText"></span>
+                    </span>
+                    <small class="text-muted ms-2" id="criterionTypeDesc"></small>
+                </div>
             </div>
 
             <!-- Min -->
@@ -123,6 +132,33 @@ window.addEventListener('load', function () {
         this.value = formatNumber(this.value);
     });
 });
+
+const criterionSelect = document.querySelector('select[name="criterion_id"]');
+const criterionTypeInfo = document.getElementById('criterionTypeInfo');
+const criterionTypeText = document.getElementById('criterionTypeText');
+const criterionTypeDesc = document.getElementById('criterionTypeDesc');
+
+function updateCriterionTypeInfo() {
+    const selected = criterionSelect.options[criterionSelect.selectedIndex];
+    const type = selected.dataset.type;
+
+    if (!type) {
+        criterionTypeInfo.style.display = 'none';
+        return;
+    }
+
+    criterionTypeInfo.style.display = 'block';
+    criterionTypeText.textContent = type.charAt(0).toUpperCase() + type.slice(1);
+
+    if (type === 'benefit') {
+        criterionTypeDesc.textContent = 'Semakin besar nilai, semakin baik.';
+    } else {
+        criterionTypeDesc.textContent = 'Semakin kecil nilai, semakin baik.';
+    }
+}
+
+criterionSelect.addEventListener('change', updateCriterionTypeInfo);
+window.addEventListener('load', updateCriterionTypeInfo);
 
 // submit
 document.getElementById('editForm').addEventListener('submit', function(e) {

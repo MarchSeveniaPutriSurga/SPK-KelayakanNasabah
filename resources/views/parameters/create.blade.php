@@ -39,7 +39,7 @@
         <div>
             <strong>Informasi:</strong> Parameter scoring mengkonversi nilai mentah menjadi skor standar 1-5.
             <br>
-            <small>Contoh: Jika pendapatan 5.000.000 - 10.000.000 maka skornya 3. Min dan Max boleh sama untuk nilai tunggal (contoh: 0 - 0).</small>
+            <small>Min dan Max boleh sama untuk nilai tunggal (contoh: 0 - 0).</small>
         </div>
     </div>
 
@@ -57,11 +57,18 @@
                 <select name="criterion_id" class="form-select form-select-lg" required>
                     <option value="">-- Pilih Kriteria --</option>
                     @foreach($criteria as $c)
-                        <option value="{{ $c->id }}">
-                            {{ $c->code }} - {{ $c->name }}
+                        <option value="{{ $c->id }}" data-type="{{ $c->type }}">
+                            {{ $c->code }} - {{ $c->name }} ({{ ucfirst($c->type) }})
                         </option>
                     @endforeach
                 </select>
+
+                <div class="mt-2" id="criterionTypeInfo" style="display:none;">
+                    <span class="badge bg-info text-dark">
+                        Jenis Kriteria: <span id="criterionTypeText"></span>
+                    </span>
+                    <small class="text-muted ms-2" id="criterionTypeDesc"></small>
+                </div>
             </div>
 
             <!-- Min Value -->
@@ -137,6 +144,32 @@ function formatRupiah(angka) {
 function unformatRupiah(angka) {
     return angka.replace(/\./g, '');
 }
+
+const criterionSelect = document.querySelector('select[name="criterion_id"]');
+const criterionTypeInfo = document.getElementById('criterionTypeInfo');
+const criterionTypeText = document.getElementById('criterionTypeText');
+const criterionTypeDesc = document.getElementById('criterionTypeDesc');
+
+criterionSelect.addEventListener('change', function () {
+    const selected = this.options[this.selectedIndex];
+    const type = selected.dataset.type;
+
+    if (!type) {
+        criterionTypeInfo.style.display = 'none';
+        criterionTypeText.textContent = '';
+        criterionTypeDesc.textContent = '';
+        return;
+    }
+
+    criterionTypeInfo.style.display = 'block';
+    criterionTypeText.textContent = type.charAt(0).toUpperCase() + type.slice(1);
+
+    if (type === 'benefit') {
+        criterionTypeDesc.textContent = 'Semakin besar nilai, semakin baik.';
+    } else {
+        criterionTypeDesc.textContent = 'Semakin kecil nilai, semakin baik.';
+    }
+});
 
 // event input
 minInput.addEventListener('input', function() {
