@@ -25,6 +25,20 @@
         </div>
     </div>
 
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fa-solid fa-check-circle me-2"></i>{{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fa-solid fa-circle-exclamation me-2"></i>{{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
+
     @if($periods->isEmpty())
         <!-- Empty State -->
         <div class="text-center py-5">
@@ -92,39 +106,45 @@
                             @endif
                         </td>
                         <td class="text-center">
-    <div class="d-flex gap-2 justify-content-center">
-        @if(!$p->is_active)
-            <a href="{{ route('periods.activate', $p->id) }}"
-               class="btn btn-sm btn-outline-info rounded"
-               title="Aktifkan Periode">
-                <i class="fa-solid fa-power-off"></i>
-            </a>
-        @endif
+                            <div class="d-flex gap-2 justify-content-center">
+                                @if(!$p->is_active)
+                                    <a href="{{ route('periods.activate', $p->id) }}"
+                                       class="btn btn-sm btn-outline-info rounded"
+                                       title="Aktifkan Periode">
+                                        <i class="fa-solid fa-power-off"></i>
+                                    </a>
+                                @endif
 
-        <a href="{{ route('periods.edit', $p->id) }}"
-           class="btn btn-sm btn-outline-warning rounded"
-           title="Edit Periode">
-            <i class="fa-solid fa-pen"></i>
-        </a>
+                                @if($p->evaluations_count === 0)
+                                    <a href="{{ route('periods.edit', $p->id) }}"
+                                       class="btn btn-sm btn-outline-warning rounded"
+                                       title="Edit Periode">
+                                        <i class="fa-solid fa-pen"></i>
+                                    </a>
 
-        <button type="button"
-                class="btn btn-sm btn-outline-danger rounded delete-btn"
-                data-id="{{ $p->id }}"
-                data-label="{{ $p->label }}"
-                title="Hapus Periode">
-            <i class="fa-solid fa-trash"></i>
-        </button>
-    </div>
+                                    <button type="button"
+                                            class="btn btn-sm btn-outline-danger rounded delete-btn"
+                                            data-id="{{ $p->id }}"
+                                            data-label="{{ $p->label }}"
+                                            title="Hapus Periode">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                @else
+                                    <span class="badge bg-light text-muted" title="Sudah memiliki penilaian">
+                                        <i class="fa-solid fa-lock me-1"></i>Terkunci
+                                    </span>
+                                @endif
+                            </div>
 
-    <!-- Hidden Delete Form -->
-    <form id="delete-form-{{ $p->id }}"
-          action="{{ route('periods.destroy', $p->id) }}"
-          method="post"
-          style="display:none">
-        @csrf
-        @method('DELETE')
-    </form>
-</td>
+                            <!-- Hidden Delete Form -->
+                            <form id="delete-form-{{ $p->id }}"
+                                  action="{{ route('periods.destroy', $p->id) }}"
+                                  method="post"
+                                  style="display:none">
+                                @csrf
+                                @method('DELETE')
+                            </form>
+                        </td>
                     </tr>
                     @endforeach
                 </tbody>
@@ -175,21 +195,6 @@
     padding: 3rem 1rem;
 }
 
-/* Buttons */
-.btn-group .btn {
-    border-radius: 0;
-}
-
-.btn-group .btn:first-child {
-    border-top-left-radius: 0.375rem;
-    border-bottom-left-radius: 0.375rem;
-}
-
-.btn-group .btn:last-child {
-    border-top-right-radius: 0.375rem;
-    border-bottom-right-radius: 0.375rem;
-}
-
 .btn-lg {
     padding: 0.75rem 1.5rem;
     font-weight: 600;
@@ -203,17 +208,6 @@
 
 /* Responsive */
 @media (max-width: 768px) {
-    .btn-group {
-        display: flex;
-        flex-direction: column;
-        width: 100%;
-    }
-    
-    .btn-group .btn {
-        border-radius: 0.375rem !important;
-        margin-bottom: 0.25rem;
-    }
-    
     .periods-table {
         font-size: 0.875rem;
     }
@@ -222,23 +216,16 @@
 
 @push('scripts')
 <script>
-// Delete confirmation with SweetAlert-like behavior
 document.querySelectorAll('.delete-btn').forEach(btn => {
     btn.addEventListener('click', function() {
         const periodId = this.dataset.id;
         const periodLabel = this.dataset.label;
-        
+
         if (confirm(`Apakah Anda yakin ingin menghapus periode "${periodLabel}"?\n\nTindakan ini tidak dapat dibatalkan!`)) {
             document.getElementById(`delete-form-${periodId}`).submit();
         }
     });
 });
-
-// Show success message if redirected with status
-@if(session('success'))
-    // You can use toast notification here if available
-    console.log('{{ session("success") }}');
-@endif
 </script>
 @endpush
 

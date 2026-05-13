@@ -9,7 +9,8 @@ class PeriodController extends Controller
 {
     public function index()
     {
-        $periods = Period::orderBy('year', 'desc')
+        $periods = Period::withCount('evaluations')
+            ->orderBy('year', 'desc')
             ->orderBy('month', 'desc')
             ->get();
 
@@ -47,6 +48,12 @@ class PeriodController extends Controller
     public function edit($id)
     {
         $period = Period::findOrFail($id);
+
+        if ($period->evaluations()->exists()) {
+            return redirect()->route('periods.index')
+                ->with('error', 'Periode ini tidak dapat diedit karena sudah memiliki penilaian.');
+        }
+
         return view('periods.edit', compact('period'));
     }
 
@@ -59,6 +66,11 @@ class PeriodController extends Controller
         ]);
 
         $p = Period::findOrFail($id);
+
+        if ($p->evaluations()->exists()) {
+            return redirect()->route('periods.index')
+                ->with('error', 'Periode ini tidak dapat diedit karena sudah memiliki penilaian.');
+        }
 
         $label = \DateTime::createFromFormat('!m', $request->month)
             ->format('F') . ' ' . $request->year;
@@ -77,7 +89,14 @@ class PeriodController extends Controller
 
     public function destroy($id)
     {
-        Period::findOrFail($id)->delete();
+        $period = Period::findOrFail($id);
+
+        if ($period->evaluations()->exists()) {
+            return redirect()->route('periods.index')
+                ->with('error', 'Periode ini tidak dapat dihapus karena sudah memiliki penilaian.');
+        }
+
+        $period->delete();
 
         return redirect()
             ->route('periods.index')
