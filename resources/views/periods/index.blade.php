@@ -115,7 +115,7 @@
                                     </a>
                                 @endif
 
-                                @if($p->evaluations_count === 0)
+                                @if(empty($p->evaluations_count))
                                     <a href="{{ route('periods.edit', $p->id) }}"
                                        class="btn btn-sm btn-outline-warning rounded"
                                        title="Edit Periode">
