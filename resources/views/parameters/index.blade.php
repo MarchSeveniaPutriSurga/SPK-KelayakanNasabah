@@ -143,11 +143,20 @@
                         </td>
                         <td class="text-center">
                             <div class="d-flex gap-2 justify-content-center">
-                                <a href="{{ route('parameters.edit', $p->id) }}"
-                                class="btn btn-sm btn-outline-warning rounded"
-                                title="Edit Parameter">
-                                    <i class="fa-solid fa-pen"></i>
-                                </a>
+                                @if($isUsed)
+                                    <button type="button"
+                                            class="btn btn-sm btn-outline-secondary rounded"
+                                            disabled
+                                            title="Tidak dapat diedit karena sudah digunakan dalam penilaian">
+                                        <i class="fa-solid fa-lock"></i>
+                                    </button>
+                                @else
+                                    <a href="{{ route('parameters.edit', $p->id) }}"
+                                    class="btn btn-sm btn-outline-warning rounded"
+                                    title="Edit Parameter">
+                                        <i class="fa-solid fa-pen"></i>
+                                    </a>
+                                @endif
                                 @if($isUsed)
                                     <button type="button"
                                             class="btn btn-sm btn-outline-secondary rounded"

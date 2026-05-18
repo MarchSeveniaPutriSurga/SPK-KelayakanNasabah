@@ -37,12 +37,33 @@ class ScoringParameterController extends Controller
     public function edit($id)
     {
         $parameter = ScoringParameter::findOrFail($id);
+
+        $isUsed = \App\Models\Evaluation::where('criterion_id', $parameter->criterion_id)
+            ->whereBetween('real_value', [$parameter->min_value, $parameter->max_value])
+            ->exists();
+
+        if ($isUsed) {
+            return redirect()->route('parameters.index')
+                ->with('error', 'Parameter tidak dapat diedit karena sudah digunakan dalam penilaian.');
+        }
+
         $criteria = Criterion::all();
         return view('parameters.edit', compact('parameter', 'criteria'));
     }
 
     public function update(Request $request, $id)
     {
+        $parameter = ScoringParameter::findOrFail($id);
+
+        $isUsed = \App\Models\Evaluation::where('criterion_id', $parameter->criterion_id)
+            ->whereBetween('real_value', [$parameter->min_value, $parameter->max_value])
+            ->exists();
+
+        if ($isUsed) {
+            return redirect()->route('parameters.index')
+                ->with('error', 'Parameter tidak dapat diperbarui karena sudah digunakan dalam penilaian.');
+        }
+
         $request->validate([
             'criterion_id' => 'required',
             'min_value' => 'required|numeric',
@@ -50,7 +71,7 @@ class ScoringParameterController extends Controller
             'score' => 'required|numeric|min:1|max:5'
         ]);
 
-        ScoringParameter::findOrFail($id)->update($request->all());
+        $parameter->update($request->all());
 
         return redirect()->route('parameters.index')->with('success', 'Parameter berhasil diperbarui.');
     }
