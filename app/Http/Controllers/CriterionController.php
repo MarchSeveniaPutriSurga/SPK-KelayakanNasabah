@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Criterion;
-use App\Models\Period;        // <- TAMBAHKAN INI
+use App\Models\Period;
 use App\Models\Evaluation;
 use Illuminate\Http\Request;
 
@@ -39,25 +39,6 @@ class CriterionController extends Controller
         $criterion = Criterion::findOrFail($id);
         return view('criteria.edit', compact('criterion'));
     }
-
-    // public function update(Request $request, $id)
-    // {
-    //     $criterion = Criterion::findOrFail($id);
-
-    //     $request->validate([
-    //         'name' => 'required',
-    //         'type' => 'required',
-    //         'weight' => 'required|numeric'
-    //     ]);
-
-    //     $criterion->update([
-    //         'name' => $request->name,
-    //         'type' => $request->type,
-    //         'weight' => $request->weight
-    //     ]);
-
-    //     return redirect()->route('criteria.index')->with('success', 'Kriteria berhasil diperbarui.');
-    // }
 
     public function update(Request $request, $id)
     {

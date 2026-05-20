@@ -92,10 +92,10 @@ class PenilaianController extends Controller
                 $criterion = Criterion::find($criterion_id);
 
                 if (str_contains(strtolower($criterion->name), 'keuntungan')) {
-                    // ✅ Hitung dari keuntungan & modal, ABAIKAN $val dari form
+                    // Hitung dari keuntungan & modal, ABAIKAN $val dari form
                     $clean = ($modal > 0) ? ($keuntungan / $modal) * 100 : 0;
                 } else {
-                    // ✅ Kriteria biasa: hapus titik ribuan saja
+                    // Kriteria biasa: hapus titik ribuan saja
                     $clean = floatval(str_replace('.', '', $val));
                 }
 
@@ -144,9 +144,7 @@ class PenilaianController extends Controller
 
         $data = [];
 
-        // =========================
         // GROUPING DATA
-        // =========================
         foreach ($evaluations as $ev) {
             $data[$ev->customer_id]['customer'] = $ev->customer->name;
             $data[$ev->customer_id]['values'][$ev->criterion_id] = [
@@ -157,10 +155,7 @@ class PenilaianController extends Controller
             ];
         }
 
-        // =========================
         // BUILD RAW MATRIX (per kriteria → semua customer)
-        // sama persis dengan SmartController
-        // =========================
         $rawMatrix = [];
         foreach ($data as $customerId => $row) {
             foreach ($criteria as $criterion) {
@@ -168,10 +163,8 @@ class PenilaianController extends Controller
             }
         }
 
-        // =========================
         // HITUNG SMART
         // formula sama dengan SmartController: norm = raw / max kolom
-        // =========================
         $results = [];
 
         foreach ($data as $customerId => $row) {
@@ -198,16 +191,12 @@ class PenilaianController extends Controller
             ];
         }
 
-        // =========================
         // SORT RANKING
-        // =========================
         usort($results, function ($a, $b) {
             return $b['smart_score'] <=> $a['smart_score'];
         });
 
-        // =========================
         // RANKING & REKOMENDASI
-        // =========================
         $maxScore = $results[0]['smart_score'] ?? 1;
 
         foreach ($results as $index => &$r) {
