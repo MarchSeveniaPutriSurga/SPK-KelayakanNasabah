@@ -8,12 +8,6 @@ use App\Models\Evaluation;
 use App\Models\Period;
 use Illuminate\Http\Request;
 
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
-use PhpOffice\PhpSpreadsheet\Style\Fill;
-use PhpOffice\PhpSpreadsheet\Style\Alignment;
-
 class SmartController extends Controller
 {
     public function index(Request $request)
@@ -23,8 +17,8 @@ class SmartController extends Controller
         $results  = [];
         $selected = null;
 
+        // Ambil periode aktif
         $period = Period::where('is_active', true)->first();
-
         $selectedPeriod = $period;
 
         if (!$period) {
@@ -39,17 +33,45 @@ class SmartController extends Controller
 
         $selected = $period->id;
 
-        $evaluations = Evaluation::where('period_id', $selected)->get();
+        $data = $this->calculateSmartResults($period);
+
+        return view('smart.index', [
+            'periods'        => $periods,
+            'criteria'       => $data['criteria'],
+            'results'        => $data['results'],
+            'selected'       => $selected,
+            'selectedPeriod' => $selectedPeriod,
+        ]);
+    }
+
+    private function calculateSmartResults($period): array
+    {
+        $criteria = Criterion::orderBy('id')->get();
+
+        $evaluations = Evaluation::where('period_id', $period->id)->get();
 
         if ($evaluations->isEmpty()) {
-            return view('smart.index', compact('periods', 'criteria', 'results', 'selected', 'selectedPeriod'));
+            return [
+                'criteria' => $criteria,
+                'results'  => [],
+            ];
         }
 
         $customerIds = $evaluations->pluck('customer_id')->unique();
         $customers   = Customer::whereIn('id', $customerIds)->get();
 
-        // --- 1. Build raw matrix ---
+        // =====================================================
+        // 1. BUILD MATRIX BERDASARKAN SCORE 1-5
+        // =====================================================
+        // Di sistem kamu, score sudah hasil konversi parameter scoring.
+        // Contoh:
+        // - Cost: nilai kecil bisa dapat score tinggi.
+        // - Benefit: nilai besar bisa dapat score tinggi.
+        //
+        // Jadi setelah masuk tahap SMART, score 1-5 dianggap:
+        // "semakin besar semakin baik".
         $rawMatrix = [];
+
         foreach ($customers as $cust) {
             foreach ($criteria as $c) {
                 $ev = $evaluations
@@ -57,27 +79,53 @@ class SmartController extends Controller
                     ->where('criterion_id', $c->id)
                     ->first();
 
-                $rawMatrix[$c->id][$cust->id] = $ev ? $ev->score : 0;
+                $rawMatrix[$c->id][$cust->id] = $ev ? (float) $ev->score : 0;
             }
         }
 
-        // --- 2. Normalisasi & weighted ---
+        // =====================================================
+        // 2. HITUNG UTILITY, WEIGHTED VALUE, TOTAL
+        // =====================================================
+        $results = [];
+
         foreach ($customers as $cust) {
             $detail = [];
             $total  = 0;
 
             foreach ($criteria as $c) {
-                $ev           = $evaluations->where('customer_id', $cust->id)->where('criterion_id', $c->id)->first();
-                $raw          = $rawMatrix[$c->id][$cust->id] ?? 0;
-                $columnValues = array_values($rawMatrix[$c->id]);
-                $maxVal       = max($columnValues);
+                $ev = $evaluations
+                    ->where('customer_id', $cust->id)
+                    ->where('criterion_id', $c->id)
+                    ->first();
 
-                $norm     = $maxVal > 0 ? $raw / $maxVal : 0;
-                $weighted = $norm * $c->weight;
+                $raw = $rawMatrix[$c->id][$cust->id] ?? 0;
+
+                $columnValues = array_values($rawMatrix[$c->id]);
+
+                $maxVal = max($columnValues);
+                $minVal = min($columnValues);
+
+                // =====================================================
+                // RUMUS UTILITY SMART
+                // =====================================================
+                // Karena score sudah dibuat 1-5 dan semakin besar semakin baik,
+                // maka utility cukup pakai rumus benefit:
+                //
+                // u_i(a_i) = (Cout - Cmin) / (Cmax - Cmin)
+                //
+                // Jangan dibalik lagi berdasarkan cost,
+                // karena cost/benefit sudah diatur di parameter scoring.
+                if (($maxVal - $minVal) == 0) {
+                    $utility = $raw > 0 ? 1 : 0;
+                } else {
+                    $utility = ($raw - $minVal) / ($maxVal - $minVal);
+                }
+
+                $weighted = $utility * $c->weight;
 
                 $detail[$c->id] = [
                     'raw'        => $raw,
-                    'norm'       => round($norm, 4),
+                    'norm'       => round($utility, 4),
                     'weighted'   => round($weighted, 4),
                     'real_value' => $ev ? $ev->real_value : null,
                     'keuntungan' => $ev ? $ev->keuntungan : null,
@@ -94,15 +142,25 @@ class SmartController extends Controller
             ];
         }
 
-        // --- 3. Sort descending ---
+        // =====================================================
+        // 3. SORTING RANKING
+        // =====================================================
         usort($results, fn($a, $b) => $b['total'] <=> $a['total']);
 
-        // --- 4. Rekomendasi proporsional terhadap pengajuan ---
+        // Tambahkan rank
+        foreach ($results as $i => &$r) {
+            $r['rank'] = $i + 1;
+        }
+        unset($r);
+
+        // =====================================================
+        // 4. HITUNG REKOMENDASI UANG CAIR
+        // =====================================================
         $maxScore = $results[0]['total'] ?? 1;
 
         foreach ($results as &$r) {
             $pengajuan = Evaluation::where('customer_id', $r['customer']->id)
-                ->where('period_id', $selected)
+                ->where('period_id', $period->id)
                 ->whereHas('criterion', function ($q) {
                     $q->where('name', 'like', '%pengajuan%');
                 })
@@ -112,83 +170,42 @@ class SmartController extends Controller
 
             $r['rekomendasi'] = round($ratio * $pengajuan);
         }
+        unset($r);
 
-        return view('smart.index', compact('periods', 'criteria', 'results', 'selected', 'selectedPeriod'));
+        return [
+            'criteria' => $criteria,
+            'results'  => $results,
+        ];
     }
 
-    // ─── HELPER: ambil & hitung data (DRY dari index) ────────────────────────────
+    // =====================================================
+    // HELPER UNTUK EXPORT EXCEL/PDF
+    // =====================================================
     private function getResultsForActivePeriod(): array
     {
         $criteria = Criterion::orderBy('id')->get();
         $period   = Period::where('is_active', true)->first();
 
         if (!$period) {
-            return ['period' => null, 'criteria' => $criteria, 'results' => []];
-        }
-
-        $evaluations = Evaluation::where('period_id', $period->id)->get();
-
-        if ($evaluations->isEmpty()) {
-            return ['period' => $period, 'criteria' => $criteria, 'results' => []];
-        }
-
-        $customers = Customer::whereIn('id', $evaluations->pluck('customer_id')->unique())->get();
-
-        // Build raw matrix
-        $rawMatrix = [];
-        foreach ($customers as $cust) {
-            foreach ($criteria as $c) {
-                $ev = $evaluations->where('customer_id', $cust->id)->where('criterion_id', $c->id)->first();
-                $rawMatrix[$c->id][$cust->id] = $ev ? $ev->score : 0;
-            }
-        }
-
-        // Normalisasi & weighted
-        $results = [];
-        foreach ($customers as $cust) {
-            $detail = [];
-            $total  = 0;
-            foreach ($criteria as $c) {
-                $ev           = $evaluations->where('customer_id', $cust->id)->where('criterion_id', $c->id)->first();
-                $raw          = $rawMatrix[$c->id][$cust->id] ?? 0;
-                $columnValues = array_values($rawMatrix[$c->id]);
-                $maxVal       = max($columnValues);
-                $norm         = $maxVal > 0 ? $raw / $maxVal : 0;
-                $weighted     = $norm * $c->weight;
-                $detail[$c->id] = [
-                    'raw'        => $raw,
-                    'norm'       => round($norm, 4),
-                    'weighted'   => round($weighted, 4),
-                    'real_value' => $ev ? $ev->real_value : null,
-                    'keuntungan' => $ev ? $ev->keuntungan : null,
-                    'modal'      => $ev ? $ev->modal : null,
-                ];
-                $total += $weighted;
-            }
-            $results[] = [
-                'customer' => $cust,
-                'detail'   => $detail,
-                'total'    => round($total, 4),
+            return [
+                'period'   => null,
+                'criteria' => $criteria,
+                'results'  => [],
             ];
         }
 
-        usort($results, fn($a, $b) => $b['total'] <=> $a['total']);
+        $data = $this->calculateSmartResults($period);
 
-        $maxScore = $results[0]['total'] ?? 1;
-        foreach ($results as &$r) {
-            $pengajuan = Evaluation::where('customer_id', $r['customer']->id)
-                ->where('period_id', $period->id)
-                ->whereHas('criterion', fn($q) => $q->where('name', 'like', '%pengajuan%'))
-                ->value('real_value') ?? 0;
-
-            $ratio = $maxScore > 0 ? $r['total'] / $maxScore : 0;
-            $r['rekomendasi'] = round($ratio * $pengajuan);
-        }
-
-        return ['period' => $period, 'criteria' => $criteria, 'results' => $results];
+        return [
+            'period'   => $period,
+            'criteria' => $data['criteria'],
+            'results'  => $data['results'],
+        ];
     }
 
-    // ─── EXPORT EXCEL ─────────────────────────────────────────────────────────────
+    // =====================================================
+    // EXPORT EXCEL
+    // =====================================================
     public function exportExcel()
     {
         ['period' => $period, 'criteria' => $criteria, 'results' => $results] =
@@ -205,36 +222,58 @@ class SmartController extends Controller
         $sheet->setCellValue('A1', 'Hasil Ranking SPK - SMART');
         $sheet->setCellValue('A2', 'Periode: ' . $periodLabel);
         $sheet->setCellValue('A3', 'Diekspor: ' . now()->format('d/m/Y H:i'));
+
         $sheet->getStyle('A1')->applyFromArray([
-            'font' => ['bold' => true, 'size' => 14],
+            'font' => [
+                'bold' => true,
+                'size' => 14,
+            ],
         ]);
 
-        // Header tabel — hanya real value per kriteria
+        // Header tabel
         $startRow = 5;
-        $headers  = ['Rank', 'Nama Nasabah'];
+
+        $headers = ['Rank', 'Nama Nasabah'];
+
         foreach ($criteria as $c) {
             $headers[] = $c->code . ' - ' . $c->name;
         }
+
         $headers[] = 'Total Skor';
         $headers[] = 'Rekomendasi (Rp)';
 
         foreach ($headers as $colIdx => $value) {
             $cell = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colIdx + 1) . $startRow;
+
             $sheet->setCellValue($cell, $value);
+
             $sheet->getStyle($cell)->applyFromArray([
-                'font'      => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
-                'fill'      => ['fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID, 'startColor' => ['rgb' => '2a7a6e']],
-                'alignment' => ['horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER],
+                'font' => [
+                    'bold'  => true,
+                    'color' => ['rgb' => 'FFFFFF'],
+                ],
+                'fill' => [
+                    'fillType'   => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                    'startColor' => ['rgb' => '2a7a6e'],
+                ],
+                'alignment' => [
+                    'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                ],
             ]);
         }
 
-        // Data
+        // Data tabel
         foreach ($results as $i => $r) {
             $excelRow = $startRow + 1 + $i;
-            $row      = [$i + 1, $r['customer']->name];
+
+            $row = [
+                $r['rank'] ?? ($i + 1),
+                $r['customer']->name,
+            ];
 
             foreach ($criteria as $c) {
                 $d = $r['detail'][$c->id] ?? [];
+
                 if (str_contains(strtolower($c->name), 'keuntungan')) {
                     $row[] = round($d['real_value'] ?? 0, 1) . '%';
                 } else {
@@ -243,7 +282,7 @@ class SmartController extends Controller
             }
 
             $row[] = $r['total'];
-            $row[] = $r['rekomendasi'] > 0 ? $r['rekomendasi'] : 'Ditolak';
+            $row[] = ($r['rekomendasi'] ?? 0) > 0 ? $r['rekomendasi'] : 'Ditolak';
 
             foreach ($row as $colIdx => $value) {
                 $cell = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colIdx + 1) . $excelRow;
@@ -253,17 +292,25 @@ class SmartController extends Controller
             // Warna baris selang-seling
             if ($i % 2 === 0) {
                 $lastCol = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(count($row));
+
                 $sheet->getStyle("A{$excelRow}:{$lastCol}{$excelRow}")->applyFromArray([
-                    'fill' => ['fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID, 'startColor' => ['rgb' => 'F0FAF8']],
+                    'fill' => [
+                        'fillType'   => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                        'startColor' => ['rgb' => 'F0FAF8'],
+                    ],
                 ]);
             }
         }
 
-        $sheet->getColumnDimension('A')->setWidth(8);
-        $sheet->getColumnDimension('B')->setWidth(28);
+        // Auto width
+        foreach (range(1, count($headers)) as $colIndex) {
+            $column = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colIndex);
+            $sheet->getColumnDimension($column)->setAutoSize(true);
+        }
 
         $tempFile = tempnam(sys_get_temp_dir(), 'spk_') . '.xlsx';
-        $writer   = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
         $writer->save($tempFile);
 
         return response()->download($tempFile, $filename, [
@@ -271,7 +318,9 @@ class SmartController extends Controller
         ])->deleteFileAfterSend(true);
     }
 
-    // ─── EXPORT PDF ───────────────────────────────────────────────────────────────
+    // =====================================================
+    // EXPORT PDF
+    // =====================================================
     public function exportPdf()
     {
         ['period' => $period, 'criteria' => $criteria, 'results' => $results] =

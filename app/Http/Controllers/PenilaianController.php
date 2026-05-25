@@ -131,6 +131,7 @@ class PenilaianController extends Controller
     {
         $periods = Period::all();
 
+        // Default ambil periode aktif, tapi tetap bisa pilih periode lain lewat request
         $selected = $request->period_id
             ?? Period::where('is_active', true)->value('id');
 
@@ -144,9 +145,10 @@ class PenilaianController extends Controller
 
         $data = [];
 
-        // GROUPING DATA
+        // GROUPING DATA PENILAIAN PER NASABAH
         foreach ($evaluations as $ev) {
             $data[$ev->customer_id]['customer'] = $ev->customer->name;
+
             $data[$ev->customer_id]['values'][$ev->criterion_id] = [
                 'real_value' => $ev->real_value,
                 'score'      => $ev->score,
@@ -155,16 +157,18 @@ class PenilaianController extends Controller
             ];
         }
 
-        // BUILD RAW MATRIX (per kriteria → semua customer)
+        // BUILD RAW MATRIX
+        // Yang dihitung SMART adalah SCORE hasil konversi parameter, bukan real value mentah
         $rawMatrix = [];
+
         foreach ($data as $customerId => $row) {
             foreach ($criteria as $criterion) {
-                $rawMatrix[$criterion->id][$customerId] = $row['values'][$criterion->id]['score'] ?? 0;
+                $rawMatrix[$criterion->id][$customerId] =
+                    $row['values'][$criterion->id]['score'] ?? 0;
             }
         }
 
         // HITUNG SMART
-        // formula sama dengan SmartController: norm = raw / max kolom
         $results = [];
 
         foreach ($data as $customerId => $row) {
@@ -173,12 +177,25 @@ class PenilaianController extends Controller
 
             foreach ($criteria as $criterion) {
 
-                $raw          = $rawMatrix[$criterion->id][$customerId] ?? 0;
-                $columnValues = array_values($rawMatrix[$criterion->id]);
-                $maxVal       = max($columnValues);
+                $raw = $rawMatrix[$criterion->id][$customerId] ?? 0;
+                $columnValues = array_values($rawMatrix[$criterion->id] ?? []);
 
-                $norm     = $maxVal > 0 ? $raw / $maxVal : 0;
-                $weighted = $norm * $criterion->weight;
+                $minVal = count($columnValues) > 0 ? min($columnValues) : 0;
+                $maxVal = count($columnValues) > 0 ? max($columnValues) : 0;
+
+                // Jika semua nilai sama, supaya tidak error pembagian 0
+                if ($maxVal == $minVal) {
+                    $utility = 1;
+                } else {
+                    if ($criterion->type === 'benefit') {
+                        $utility = ($raw - $minVal) / ($maxVal - $minVal);
+                    } else {
+                        // cost
+                        $utility = ($maxVal - $raw) / ($maxVal - $minVal);
+                    }
+                }
+
+                $weighted = $utility * $criterion->weight;
 
                 $total += $weighted;
             }
@@ -191,25 +208,19 @@ class PenilaianController extends Controller
             ];
         }
 
-        // SORT RANKING
+        // SORT RANKING DARI NILAI TERBESAR
         usort($results, function ($a, $b) {
             return $b['smart_score'] <=> $a['smart_score'];
         });
 
-        // RANKING & REKOMENDASI
+        // RANKING DAN REKOMENDASI PENCAIRAN
         $maxScore = $results[0]['smart_score'] ?? 1;
 
         foreach ($results as $index => &$r) {
 
             $r['ranking'] = $index + 1;
 
-            $quota = $selectedPeriod->quota_lolos ?? 0;
-
-            $r['status'] = ($r['ranking'] <= $quota)
-                ? 'Layak Lanjut'
-                : 'Tidak Layak';
-
-            // Rekomendasi pencairan: proporsional terhadap nilai pengajuan
+            // Ambil nilai pengajuan pinjaman
             $pengajuan = Evaluation::where('customer_id', $r['customer_id'])
                 ->where('period_id', $selected)
                 ->whereHas('criterion', function ($q) {
@@ -217,6 +228,7 @@ class PenilaianController extends Controller
                 })
                 ->value('real_value') ?? 0;
 
+            // Rekomendasi pencairan proporsional berdasarkan nilai SMART
             $ratio = $maxScore > 0 ? $r['smart_score'] / $maxScore : 0;
 
             $r['rekomendasi'] = round($ratio * $pengajuan);
