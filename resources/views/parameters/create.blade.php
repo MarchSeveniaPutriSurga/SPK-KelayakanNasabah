@@ -202,6 +202,20 @@ document.getElementById('parameterForm').addEventListener('submit', function(e) 
     maxInput.value = unformatRupiah(maxInput.value);
 });
 </script>
+
+<style>
+    .icon-circle {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+}
+</style>
 @endpush
 
 @endsection

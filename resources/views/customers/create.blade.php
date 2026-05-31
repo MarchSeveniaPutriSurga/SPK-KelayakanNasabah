@@ -14,7 +14,7 @@
 
             <div>
                 <h4 class="mb-1 fw-bold">
-                    Edit Data Nasabah
+                    Tambah Data Nasabah
                 </h4>
 
                 <p class="text-muted mb-0 small">
