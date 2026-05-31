@@ -250,66 +250,150 @@
 
 </style>
 
-@push('scripts')
+{{-- @push('scripts')
 
 <script>
 
-// Form inputs
+    // Form inputs
+    const nikInput = document.getElementById('nikInput');
+    const nameInput = document.getElementById('nameInput');
+
+    // Validation
+    document.getElementById('customerForm')
+    .addEventListener('submit', function(e) {
+
+        const nik = nikInput.value.trim();
+        const name = nameInput.value.trim();
+
+        if (!nik) {
+            e.preventDefault();
+            alert('NIK wajib diisi!');
+            nikInput.focus();
+            return false;
+        }
+
+        if (nik.length !== 16) {
+            e.preventDefault();
+            alert('NIK harus 16 digit!');
+            nikInput.focus();
+            return false;
+        }
+
+        if (!name) {
+            e.preventDefault();
+            alert('Nama nasabah wajib diisi!');
+            nameInput.focus();
+            return false;
+        }
+
+        if (name.length < 3) {
+            e.preventDefault();
+            alert('Nama minimal 3 karakter!');
+            nameInput.focus();
+            return false;
+        }
+
+        if (!confirm(`Simpan data nasabah "${name}"?`)) {
+            e.preventDefault();
+            return false;
+        }
+
+    });
+
+    // Reset
+    document.querySelector('button[type="reset"]')
+    .addEventListener('click', function(e) {
+
+        if (!confirm('Reset semua input?')) {
+            e.preventDefault();
+        }
+
+    });
+
+</script>
+
+@endpush --}}
+@push('scripts')
+
+<script>
 const nikInput = document.getElementById('nikInput');
 const nameInput = document.getElementById('nameInput');
+const customerForm = document.getElementById('customerForm');
+const resetBtn = document.querySelector('button[type="reset"]');
 
-// Validation
-document.getElementById('customerForm')
-.addEventListener('submit', function(e) {
+function showWarning(message, input = null) {
+    Swal.fire({
+        icon: 'warning',
+        title: 'Perhatian',
+        text: message,
+        confirmButtonText: 'Oke'
+    }).then(() => {
+        if (input) {
+            input.focus();
+        }
+    });
+}
+
+customerForm.addEventListener('submit', function(e) {
+    e.preventDefault();
 
     const nik = nikInput.value.trim();
     const name = nameInput.value.trim();
 
     if (!nik) {
-        e.preventDefault();
-        alert('NIK wajib diisi!');
-        nikInput.focus();
-        return false;
+        showWarning('NIK wajib diisi!', nikInput);
+        return;
     }
 
     if (nik.length !== 16) {
-        e.preventDefault();
-        alert('NIK harus 16 digit!');
-        nikInput.focus();
-        return false;
+        showWarning('NIK harus 16 digit!', nikInput);
+        return;
     }
 
     if (!name) {
-        e.preventDefault();
-        alert('Nama nasabah wajib diisi!');
-        nameInput.focus();
-        return false;
+        showWarning('Nama nasabah wajib diisi!', nameInput);
+        return;
     }
 
     if (name.length < 3) {
-        e.preventDefault();
-        alert('Nama minimal 3 karakter!');
-        nameInput.focus();
-        return false;
+        showWarning('Nama minimal 3 karakter!', nameInput);
+        return;
     }
 
-    if (!confirm(`Simpan data nasabah "${name}"?`)) {
-        e.preventDefault();
-        return false;
-    }
-
+    Swal.fire({
+        icon: 'question',
+        title: 'Simpan Perubahan?',
+        text: `Simpan data nasabah "${name}"?`,
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Simpan',
+        cancelButtonText: 'Batal',
+        confirmButtonColor: '#0d6efd',
+        cancelButtonColor: '#6c757d'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            customerForm.submit();
+        }
+    });
 });
 
-// Reset
-document.querySelector('button[type="reset"]')
-.addEventListener('click', function(e) {
+resetBtn.addEventListener('click', function(e) {
+    e.preventDefault();
 
-    if (!confirm('Reset semua input?')) {
-        e.preventDefault();
-    }
-
+    Swal.fire({
+        icon: 'question',
+        title: 'Reset Form?',
+        text: 'Semua input akan dikembalikan seperti semula.',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Reset',
+        cancelButtonText: 'Batal',
+        confirmButtonColor: '#dc3545',
+        cancelButtonColor: '#6c757d'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            customerForm.reset();
+        }
+    });
 });
-
 </script>
 
 @endpush

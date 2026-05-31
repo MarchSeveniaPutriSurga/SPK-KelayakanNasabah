@@ -203,83 +203,113 @@
 </style>
 
 @push('scripts')
-<script>
-// Form inputs
-const nameInput = document.getElementById('nameInput');
-const typeSelect = document.getElementById('typeSelect');
-const weightInput = document.getElementById('weightInput');
+    <script>
+        // Form inputs
+        const nameInput = document.getElementById('nameInput');
+        const typeSelect = document.getElementById('typeSelect');
+        const weightInput = document.getElementById('weightInput');
+        const editForm = document.getElementById('editForm');
+        const resetBtn = document.querySelector('button[type="reset"]');
 
-// Store original values
-const originalName = nameInput.value;
-const originalType = typeSelect.value;
-const originalWeight = weightInput.value;
+        // Store original values
+        const originalName = nameInput.value;
+        const originalType = typeSelect.value;
+        const originalWeight = weightInput.value;
 
-// Check for changes
-function hasChanges() {
-    return nameInput.value !== originalName || 
-           typeSelect.value !== originalType || 
-           weightInput.value !== originalWeight;
-}
+        // Check for changes
+        function hasChanges() {
+            return nameInput.value !== originalName || 
+                typeSelect.value !== originalType || 
+                weightInput.value !== originalWeight;
+        }
 
-// Form validation
-document.getElementById('editForm').addEventListener('submit', function(e) {
-    const name = nameInput.value.trim();
-    const type = typeSelect.value;
-    const weight = parseFloat(weightInput.value);
-    
-    if (!name || !type) {
-        e.preventDefault();
-        alert('Harap lengkapi semua field yang wajib diisi!');
-        return false;
-    }
-    
-    if (isNaN(weight) || weight <= 0 || weight > 1) {
-        e.preventDefault();
-        alert('Bobot harus antara 0 dan 1!\nContoh: 0.25 untuk 25%');
-        weightInput.focus();
-        return false;
-    }
-    
-    if (!hasChanges()) {
-        e.preventDefault();
-        alert('Tidak ada perubahan data yang dilakukan.');
-        return false;
-    }
-    
-    // Confirm before submit
-    if (!confirm(`Update kriteria "${name}"?\n\nPerubahan akan disimpan ke database.`)) {
-        e.preventDefault();
-        return false;
-    }
-});
+        // Alert warning
+        function showWarning(message, input = null) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Perhatian',
+                text: message,
+                confirmButtonText: 'Oke',
+                confirmButtonColor: '#f59e0b'
+            }).then(() => {
+                if (input) {
+                    input.focus();
+                }
+            });
+        }
 
-// Reset form handler
-document.querySelector('button[type="reset"]').addEventListener('click', function(e) {
-    if (!confirm('Reset form ke data awal?')) {
-        e.preventDefault();
-        return false;
-    }
-    
-    // Restore original values
-    setTimeout(() => {
-        nameInput.value = originalName;
-        typeSelect.value = originalType;
-        weightInput.value = originalWeight;
-        
-        const weight = parseFloat(originalWeight);
-        const percentage = (weight * 100).toFixed(1);
-        previewWeight.innerHTML = `<i class="fa-solid fa-weight-hanging me-1"></i>Bobot: ${weight} (${percentage}%)`;
-    }, 10);
-});
+        // Form validation
+        editForm.addEventListener('submit', function(e) {
+            e.preventDefault();
 
-// Warn before leaving with unsaved changes
-window.addEventListener('beforeunload', function(e) {
-    if (hasChanges()) {
-        e.preventDefault();
-        e.returnValue = '';
-    }
-});
-</script>
+            const name = nameInput.value.trim();
+            const type = typeSelect.value;
+            const weight = parseFloat(weightInput.value);
+
+            if (!name || !type) {
+                showWarning('Harap lengkapi semua field yang wajib diisi!');
+                return;
+            }
+
+            if (isNaN(weight) || weight <= 0 || weight > 1) {
+                showWarning('Bobot harus antara 0 dan 1! Contoh: 0.25 untuk 25%', weightInput);
+                return;
+            }
+
+            if (!hasChanges()) {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Tidak Ada Perubahan',
+                    text: 'Tidak ada perubahan data yang dilakukan.',
+                    confirmButtonText: 'Oke',
+                    confirmButtonColor: '#0d6efd'
+                });
+                return;
+            }
+
+            Swal.fire({
+                icon: 'question',
+                title: 'Update Kriteria?',
+                text: `Update kriteria "${name}"?`,
+                showCancelButton: true,
+                confirmButtonText: 'Ya, Update',
+                cancelButtonText: 'Batal',
+                confirmButtonColor: '#0d6efd',
+                cancelButtonColor: '#6c757d'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    editForm.submit();
+                }
+            });
+        });
+
+        // Reset form handler
+        resetBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+
+            Swal.fire({
+                icon: 'question',
+                title: 'Reset Form?',
+                text: 'Reset form ke data awal?',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, Reset',
+                cancelButtonText: 'Batal',
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    nameInput.value = originalName;
+                    typeSelect.value = originalType;
+                    weightInput.value = originalWeight;
+
+                    const weight = parseFloat(originalWeight);
+                    const percentage = (weight * 100).toFixed(1);
+
+                    previewWeight.innerHTML = `<i class="fa-solid fa-weight-hanging me-1"></i>Bobot: ${weight} (${percentage}%)`;
+                }
+            });
+        });
+    </script>
 @endpush
 
 @endsection

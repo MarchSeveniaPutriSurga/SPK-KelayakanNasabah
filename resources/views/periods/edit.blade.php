@@ -216,71 +216,103 @@ input[type="number"]::-webkit-outer-spin-button {
 
 @push('scripts')
 <script>
-const monthSelect = document.getElementById('monthSelect');
-const yearInput   = document.getElementById('yearInput');
+    const monthSelect = document.getElementById('monthSelect');
+    const yearInput   = document.getElementById('yearInput');
+    const periodForm  = document.getElementById('periodForm');
+    const resetBtn    = document.querySelector('button[type="reset"]');
 
-// Simpan nilai awal untuk reset
-const originalMonth = monthSelect.value;
-const originalYear  = yearInput.value;
+    // Simpan nilai awal untuk reset
+    const originalMonth = monthSelect.value;
+    const originalYear  = yearInput.value;
 
-const monthNames = [
-    '', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-    'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
-];
+    const monthNames = [
+        '', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+    ];
 
-// Cek ada perubahan atau tidak
-function hasChanges() {
-    return monthSelect.value !== originalMonth ||
-           yearInput.value !== originalYear;
-}
-
-// Validasi sebelum submit
-document.getElementById('periodForm').addEventListener('submit', function(e) {
-    const month = monthSelect.value;
-    const year  = yearInput.value;
-
-    if (!month || !year) {
-        e.preventDefault();
-        alert('Harap lengkapi bulan dan tahun terlebih dahulu');
-        return false;
+    // Cek ada perubahan atau tidak
+    function hasChanges() {
+        return monthSelect.value !== originalMonth ||
+               yearInput.value !== originalYear;
     }
 
-    if (year < 2020 || year > 2099) {
-        e.preventDefault();
-        alert('Tahun harus antara 2020 - 2099');
-        return false;
+    // Alert warning
+    function showWarning(message) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Perhatian',
+            text: message,
+            confirmButtonText: 'Oke',
+            confirmButtonColor: '#f59e0b'
+        });
     }
 
-    if (!hasChanges()) {
+    // Validasi sebelum submit
+    periodForm.addEventListener('submit', function(e) {
         e.preventDefault();
-        alert('Tidak ada perubahan data yang dilakukan.');
-        return false;
-    }
 
-    const monthName = monthNames[parseInt(month)];
-    if (!confirm(`Update periode menjadi ${monthName} ${year}?\n\nPerubahan akan disimpan ke database.`)) {
+        const month = monthSelect.value;
+        const year  = yearInput.value;
+
+        if (!month || !year) {
+            showWarning('Harap lengkapi bulan dan tahun terlebih dahulu');
+            return;
+        }
+
+        if (year < 2020 || year > 2099) {
+            showWarning('Tahun harus antara 2020 - 2099');
+            return;
+        }
+
+        if (!hasChanges()) {
+            Swal.fire({
+                icon: 'info',
+                title: 'Tidak Ada Perubahan',
+                text: 'Tidak ada perubahan data yang dilakukan.',
+                confirmButtonText: 'Oke',
+                confirmButtonColor: '#0d6efd'
+            });
+            return;
+        }
+
+        const monthName = monthNames[parseInt(month)];
+
+        Swal.fire({
+            icon: 'question',
+            title: 'Update Periode?',
+            text: `Update periode menjadi ${monthName} ${year}?`,
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Update',
+            cancelButtonText: 'Batal',
+            confirmButtonColor: '#0d6efd',
+            cancelButtonColor: '#6c757d'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                periodForm.submit();
+            }
+        });
+    });
+
+    // Reset ke nilai awal
+    resetBtn.addEventListener('click', function(e) {
         e.preventDefault();
-        return false;
-    }
-});
 
-// Reset ke nilai awal
-document.querySelector('button[type="reset"]').addEventListener('click', function(e) {
-    e.preventDefault();
-
-    if (!confirm('Reset form ke data awal?')) return;
-
-    monthSelect.value = originalMonth;
-    yearInput.value   = originalYear;
-});
-
-// Warn sebelum keluar kalau ada perubahan
-window.addEventListener('beforeunload', function(e) {
-    if (hasChanges()) {
-        e.preventDefault();
-        e.returnValue = '';
-    }
-});
+        Swal.fire({
+            icon: 'question',
+            title: 'Reset Form?',
+            text: 'Reset form ke data awal?',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Reset',
+            cancelButtonText: 'Batal',
+            confirmButtonColor: '#dc3545',
+            cancelButtonColor: '#6c757d'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                monthSelect.value = originalMonth;
+                yearInput.value   = originalYear;
+            }
+        });
+    });
 </script>
 @endpush
 

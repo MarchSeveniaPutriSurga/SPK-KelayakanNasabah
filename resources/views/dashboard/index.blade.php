@@ -25,19 +25,18 @@
                 <i class="fa-solid fa-filter"></i>
                 <span>Filter Periode Analisis</span>
             </div>
+
             <form method="get" action="{{ route('dashboard') }}" class="filter-form-inline">
                 <select name="period" class="form-select-modern" onchange="this.form.submit()">
                     <option value="">Pilih Periode</option>
+
                     @foreach($periods as $p)
                         <option value="{{ $p->id }}" 
                             {{ (request('period') == $p->id) || (!request('period') && $selectedPeriod && $selectedPeriod->id == $p->id) ? 'selected' : '' }}>
-                            {{ $p->label }}
+                            {{ $p->label }} {{ $p->is_active ? '(Aktif)' : '' }}
                         </option>
                     @endforeach
                 </select>
-                <button type="submit" class="btn-filter">
-                    <i class="fa-solid fa-sync"></i> Terapkan
-                </button>
             </form>
         </div>
     </div>

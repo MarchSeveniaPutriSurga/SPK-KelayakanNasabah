@@ -329,16 +329,35 @@
 
 @push('scripts')
 <script>
-// Delete confirmation
 document.querySelectorAll('.delete-btn').forEach(btn => {
     btn.addEventListener('click', function() {
         const paramId = this.dataset.id;
         const criterion = this.dataset.criterion;
         const range = this.dataset.range;
-        
-        if (confirm(`Apakah Anda yakin ingin menghapus parameter:\n\nKriteria: ${criterion}\nRentang: ${range}\n\nTindakan ini tidak dapat dibatalkan!`)) {
-            document.getElementById(`delete-form-${paramId}`).submit();
-        }
+
+        Swal.fire({
+            icon: 'warning',
+            title: 'Hapus Parameter?',
+            html: `
+                <div style="text-align:left">
+                    <p class="mb-2">Apakah Anda yakin ingin menghapus parameter ini?</p>
+                    <hr>
+                    <p class="mb-1"><strong>Kriteria:</strong> ${criterion}</p>
+                    <p class="mb-1"><strong>Rentang:</strong> ${range}</p>
+                    <hr>
+                    <small class="text-danger">Tindakan ini tidak dapat dibatalkan!</small>
+                </div>
+            `,
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Hapus',
+            cancelButtonText: 'Batal',
+            confirmButtonColor: '#dc3545',
+            cancelButtonColor: '#6c757d'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById(`delete-form-${paramId}`).submit();
+            }
+        });
     });
 });
 </script>

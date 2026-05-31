@@ -427,16 +427,32 @@
 
 @push('scripts')
 <script>
-// Delete confirmation
 document.querySelectorAll('.delete-btn').forEach(btn => {
     btn.addEventListener('click', function() {
         const criterionId = this.dataset.id;
         const criterionCode = this.dataset.code;
         const criterionName = this.dataset.name;
-        
-        if (confirm(`Apakah Anda yakin ingin menghapus kriteria "${criterionCode} - ${criterionName}"?\n\nTindakan ini tidak dapat dibatalkan!`)) {
-            document.getElementById(`delete-form-${criterionId}`).submit();
-        }
+
+        Swal.fire({
+            icon: 'warning',
+            title: 'Hapus Kriteria?',
+            html: `
+                <div style="text-align:left">
+                    <p>Apakah Anda yakin ingin menghapus kriteria ini?</p>
+                    <p class="mb-1"><strong>Kriteria:</strong> ${criterionCode} - ${criterionName}</p>
+                    <small class="text-danger">Tindakan ini tidak dapat dibatalkan!</small>
+                </div>
+            `,
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Hapus',
+            cancelButtonText: 'Batal',
+            confirmButtonColor: '#dc3545',
+            cancelButtonColor: '#6c757d'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById(`delete-form-${criterionId}`).submit();
+            }
+        });
     });
 });
 </script>

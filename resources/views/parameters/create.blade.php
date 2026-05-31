@@ -118,11 +118,28 @@
     </form>
 </div>
 
+<style>
+    .icon-circle {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+}
+</style>
+
 @push('scripts')
 <script>
 // ambil input
 const minInput = document.getElementById('minInput');
 const maxInput = document.getElementById('maxInput');
+const parameterForm = document.getElementById('parameterForm');
+const scoreSelect = document.querySelector('select[name="score"]');
+const resetBtn = document.querySelector('button[type="reset"]');
 
 // format ribuan
 function formatRupiah(angka) {
@@ -143,6 +160,20 @@ function formatRupiah(angka) {
 // hapus titik
 function unformatRupiah(angka) {
     return angka.replace(/\./g, '');
+}
+
+function showWarning(message, input = null) {
+    Swal.fire({
+        icon: 'warning',
+        title: 'Perhatian',
+        text: message,
+        confirmButtonText: 'Oke',
+        confirmButtonColor: '#f59e0b'
+    }).then(() => {
+        if (input) {
+            input.focus();
+        }
+    });
 }
 
 const criterionSelect = document.querySelector('select[name="criterion_id"]');
@@ -181,41 +212,106 @@ maxInput.addEventListener('input', function() {
 });
 
 // validasi + kirim angka bersih
-document.getElementById('parameterForm').addEventListener('submit', function(e) {
+// document.getElementById('parameterForm').addEventListener('submit', function(e) {
+//     const min = parseFloat(unformatRupiah(minInput.value));
+//     const max = parseFloat(unformatRupiah(maxInput.value));
+
+//     if (isNaN(min) || isNaN(max)) {
+//         e.preventDefault();
+//         alert('Nilai harus berupa angka!');
+//         return false;
+//     }
+
+//     if (min > max) {
+//         e.preventDefault();
+//         alert('Nilai minimum tidak boleh lebih besar dari maksimum!');
+//         return false;
+//     }
+
+//     // kirim ke backend tanpa titik
+//     minInput.value = unformatRupiah(minInput.value);
+//     maxInput.value = unformatRupiah(maxInput.value);
+// });
+parameterForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const criterion = criterionSelect.value;
+    const criterionText = criterionSelect.options[criterionSelect.selectedIndex].text;
+    const score = scoreSelect.value;
     const min = parseFloat(unformatRupiah(minInput.value));
     const max = parseFloat(unformatRupiah(maxInput.value));
 
+    if (!criterion) {
+        showWarning('Pilih kriteria terlebih dahulu!', criterionSelect);
+        return;
+    }
+
     if (isNaN(min) || isNaN(max)) {
-        e.preventDefault();
-        alert('Nilai harus berupa angka!');
-        return false;
+        showWarning('Nilai minimum dan maksimum harus berupa angka!', minInput);
+        return;
     }
 
     if (min > max) {
-        e.preventDefault();
-        alert('Nilai minimum tidak boleh lebih besar dari maksimum!');
-        return false;
+        showWarning('Nilai minimum tidak boleh lebih besar dari maksimum!', minInput);
+        return;
     }
 
-    // kirim ke backend tanpa titik
-    minInput.value = unformatRupiah(minInput.value);
-    maxInput.value = unformatRupiah(maxInput.value);
+    if (!score) {
+        showWarning('Pilih skor standar terlebih dahulu!', scoreSelect);
+        return;
+    }
+
+    Swal.fire({
+        icon: 'question',
+        title: 'Simpan Parameter?',
+        html: `
+            <div style="text-align:left">
+                <p>Apakah Anda yakin ingin menyimpan parameter scoring ini?</p>
+                <hr>
+                <p class="mb-1"><strong>Kriteria:</strong> ${criterionText}</p>
+                <p class="mb-1"><strong>Rentang:</strong> ${minInput.value} - ${maxInput.value}</p>
+                <p class="mb-1"><strong>Skor:</strong> ${score}</p>
+            </div>
+        `,
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Simpan',
+        cancelButtonText: 'Batal',
+        confirmButtonColor: '#0d6efd',
+        cancelButtonColor: '#6c757d'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            minInput.value = unformatRupiah(minInput.value);
+            maxInput.value = unformatRupiah(maxInput.value);
+
+            parameterForm.submit();
+        }
+    });
+});
+
+// reset form
+resetBtn.addEventListener('click', function(e) {
+    e.preventDefault();
+
+    Swal.fire({
+        icon: 'question',
+        title: 'Reset Form?',
+        text: 'Reset semua input? Data yang dimasukkan akan hilang.',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Reset',
+        cancelButtonText: 'Batal',
+        confirmButtonColor: '#dc3545',
+        cancelButtonColor: '#6c757d'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            parameterForm.reset();
+
+            criterionTypeInfo.style.display = 'none';
+            criterionTypeText.textContent = '';
+            criterionTypeDesc.textContent = '';
+        }
+    });
 });
 </script>
-
-<style>
-    .icon-circle {
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--primary), var(--accent));
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.4rem;
-}
-</style>
 @endpush
 
 @endsection

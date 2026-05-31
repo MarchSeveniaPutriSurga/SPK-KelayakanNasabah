@@ -288,64 +288,76 @@
         document.querySelector('button[type="reset"]').addEventListener('click', function(e) {
             e.preventDefault();
 
-            if (confirm('Apakah Anda yakin ingin mereset semua pilihan dan input?')) {
-                document.querySelectorAll('.select-row').forEach(cb => {
-                    cb.checked = false;
-                    cb.dispatchEvent(new Event('change'));
+            Swal.fire({
+                icon: 'question',
+                title: 'Reset Pilihan?',
+                text: 'Apakah Anda yakin ingin mereset semua pilihan dan input?',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, Reset',
+                cancelButtonText: 'Batal',
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.querySelectorAll('.select-row').forEach(cb => {
+                        cb.checked = false;
+                        cb.dispatchEvent(new Event('change'));
+                    });
+
+                    document.getElementById('checkAll').checked = false;
+                }
+            });
+        });
+
+        // TAMBAHAN WAJIB
+        document.addEventListener('DOMContentLoaded', function() {
+
+            updateSelectedCount();
+
+            // FORMAT ULANG SAAT LOAD
+            document.querySelectorAll('.real-input').forEach(input => {
+                let raw = input.value.replace(/\D/g,'');
+
+                if (!raw) return;
+
+                input.dataset.raw = raw;
+
+                input.value = raw.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+            });
+
+        });
+
+        //  FIX SEBELUM SUBMIT (INI YANG PALING PENTING)
+        document.querySelector('form').addEventListener('submit', function(e) {
+
+            // AKTIFKAN SEMUA INPUT BIAR KEKIRIM
+            document.querySelectorAll('input').forEach(inp => {
+                inp.disabled = false;
+            });
+
+            let hasEmpty = false;
+
+            document.querySelectorAll('.select-row:checked').forEach(cb => {
+                let tr = cb.closest('tr');
+
+                tr.querySelectorAll('input[name^="values"]').forEach(inp => {
+
+                    let raw = inp.dataset.raw || inp.value.replace('%','').trim();
+
+                    if (!raw || raw === '') {
+                        hasEmpty = true;
+                    }
+
+                    inp.value = raw;
                 });
-                document.getElementById('checkAll').checked = false;
+            });
+
+            if (hasEmpty) {
+                e.preventDefault();
+                alert('Pastikan semua nilai termasuk hasil % sudah dihitung!');
+                return;
             }
         });
-
-        // 🔥 TAMBAHAN WAJIB
-document.addEventListener('DOMContentLoaded', function() {
-
-    updateSelectedCount();
-
-    // 🔥 FORMAT ULANG SAAT LOAD
-    document.querySelectorAll('.real-input').forEach(input => {
-        let raw = input.value.replace(/\D/g,'');
-
-        if (!raw) return;
-
-        input.dataset.raw = raw;
-
-        input.value = raw.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-    });
-
-});
-
-        // 🔥 FIX SEBELUM SUBMIT (INI YANG PALING PENTING)
-document.querySelector('form').addEventListener('submit', function(e) {
-
-    // 🔥 AKTIFKAN SEMUA INPUT BIAR KEKIRIM
-    document.querySelectorAll('input').forEach(inp => {
-        inp.disabled = false;
-    });
-
-    let hasEmpty = false;
-
-    document.querySelectorAll('.select-row:checked').forEach(cb => {
-        let tr = cb.closest('tr');
-
-        tr.querySelectorAll('input[name^="values"]').forEach(inp => {
-
-            let raw = inp.dataset.raw || inp.value.replace('%','').trim();
-
-            if (!raw || raw === '') {
-                hasEmpty = true;
-            }
-
-            inp.value = raw;
-        });
-    });
-
-    if (hasEmpty) {
-        e.preventDefault();
-        alert('Pastikan semua nilai termasuk hasil % sudah dihitung!');
-        return;
-    }
-});
     </script>
 @endpush
 

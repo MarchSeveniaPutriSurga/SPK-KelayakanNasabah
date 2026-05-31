@@ -25,7 +25,7 @@
         </div>
     </div>
 
-    @if(session('success'))
+    {{-- @if(session('success'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             <i class="fa-solid fa-check-circle me-2"></i>{{ session('success') }}
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
@@ -37,7 +37,7 @@
             <i class="fa-solid fa-circle-exclamation me-2"></i>{{ session('error') }}
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
-    @endif
+    @endif --}}
 
     @if($periods->isEmpty())
         <!-- Empty State -->
@@ -231,9 +231,26 @@ document.querySelectorAll('.delete-btn').forEach(btn => {
         const periodId = this.dataset.id;
         const periodLabel = this.dataset.label;
 
-        if (confirm(`Apakah Anda yakin ingin menghapus periode "${periodLabel}"?\n\nTindakan ini tidak dapat dibatalkan!`)) {
-            document.getElementById(`delete-form-${periodId}`).submit();
-        }
+        Swal.fire({
+            icon: 'warning',
+            title: 'Hapus Periode?',
+            html: `
+                <div style="text-align:left">
+                    <p>Apakah Anda yakin ingin menghapus periode ini?</p>
+                    <p class="mb-1"><strong>Periode:</strong> ${periodLabel}</p>
+                    <small class="text-danger">Tindakan ini tidak dapat dibatalkan!</small>
+                </div>
+            `,
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Hapus',
+            cancelButtonText: 'Batal',
+            confirmButtonColor: '#dc3545',
+            cancelButtonColor: '#6c757d'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById(`delete-form-${periodId}`).submit();
+            }
+        });
     });
 });
 </script>

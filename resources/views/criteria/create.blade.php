@@ -229,27 +229,50 @@ document.getElementById('criteriaForm').addEventListener('submit', function(e) {
     }
     
     // Confirm before submit
-    if (!confirm(`Simpan kriteria "${code} - ${name}"?`)) {
-        e.preventDefault();
-        return false;
-    }
+    e.preventDefault();
+
+    Swal.fire({
+        icon: 'question',
+        title: 'Simpan Kriteria?',
+        text: `Simpan kriteria "${code} - ${name}"?`,
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Simpan',
+        cancelButtonText: 'Batal',
+        confirmButtonColor: '#0d6efd',
+        cancelButtonColor: '#6c757d'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            this.submit();
+        }
+    });
 });
 
 // Reset form handler
 document.querySelector('button[type="reset"]').addEventListener('click', function(e) {
-    if (!confirm('Reset semua input? Data yang dimasukkan akan hilang.')) {
-        e.preventDefault();
-        return false;
-    }
-    
-    // Reset preview
-    setTimeout(() => {
-        previewCode.innerHTML = '<i class="fa-solid fa-question"></i>';
-        previewName.textContent = 'Nama Kriteria';
-        previewType.innerHTML = '<i class="fa-solid fa-circle-question me-1"></i>Jenis: -';
-        previewWeight.innerHTML = '<i class="fa-solid fa-weight-hanging me-1"></i>Bobot: -';
-        typeHelp.innerHTML = '<i class="fa-solid fa-circle-question me-1"></i>Pilih jenis berdasarkan karakteristik kriteria';
-    }, 10);
+    e.preventDefault();
+
+    Swal.fire({
+        icon: 'question',
+        title: 'Reset Form?',
+        text: 'Reset semua input? Data yang dimasukkan akan hilang.',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Reset',
+        cancelButtonText: 'Batal',
+        confirmButtonColor: '#dc3545',
+        cancelButtonColor: '#6c757d'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            this.form.reset();
+
+            setTimeout(() => {
+                previewCode.innerHTML = '<i class="fa-solid fa-question"></i>';
+                previewName.textContent = 'Nama Kriteria';
+                previewType.innerHTML = '<i class="fa-solid fa-circle-question me-1"></i>Jenis: -';
+                previewWeight.innerHTML = '<i class="fa-solid fa-weight-hanging me-1"></i>Bobot: -';
+                typeHelp.innerHTML = '<i class="fa-solid fa-circle-question me-1"></i>Pilih jenis berdasarkan karakteristik kriteria';
+            }, 10);
+        }
+    });
 });
 </script>
 @endpush

@@ -296,12 +296,13 @@
 @push('scripts')
 
 <script>
-
 // Inputs
 const nikInput = document.getElementById('nikInput');
 const nameInput = document.getElementById('nameInput');
 const identifierInput = document.getElementById('identifierInput');
 const phoneInput = document.getElementById('phoneInput');
+const editForm = document.getElementById('editForm');
+const resetBtn = document.querySelector('button[type="reset"]');
 
 // Original values
 const originalNik = nikInput.value;
@@ -309,84 +310,102 @@ const originalName = nameInput.value;
 const originalIdentifier = identifierInput.value;
 const originalPhone = phoneInput.value;
 
-// Check changes
+// Cek apakah ada perubahan data
 function hasChanges() {
-
     return nikInput.value !== originalNik ||
            nameInput.value !== originalName ||
            identifierInput.value !== originalIdentifier ||
            phoneInput.value !== originalPhone;
-
 }
 
-// Validation
-document.getElementById('editForm')
-.addEventListener('submit', function(e) {
+// Fungsi alert warning
+function showWarning(message, input = null) {
+    Swal.fire({
+        icon: 'warning',
+        title: 'Perhatian',
+        text: message,
+        confirmButtonText: 'Oke',
+        confirmButtonColor: '#f59e0b'
+    }).then(() => {
+        if (input) {
+            input.focus();
+        }
+    });
+}
+
+// Submit / Update
+editForm.addEventListener('submit', function(e) {
+    e.preventDefault();
 
     const nik = nikInput.value.trim();
     const name = nameInput.value.trim();
 
     if (!nik) {
-        e.preventDefault();
-        alert('NIK wajib diisi!');
-        nikInput.focus();
-        return false;
+        showWarning('NIK wajib diisi!', nikInput);
+        return;
     }
 
     if (nik.length !== 16) {
-        e.preventDefault();
-        alert('NIK harus 16 digit!');
-        nikInput.focus();
-        return false;
+        showWarning('NIK harus 16 digit!', nikInput);
+        return;
     }
 
     if (!name) {
-        e.preventDefault();
-        alert('Nama nasabah wajib diisi!');
-        nameInput.focus();
-        return false;
+        showWarning('Nama nasabah wajib diisi!', nameInput);
+        return;
     }
 
     if (name.length < 3) {
-        e.preventDefault();
-        alert('Nama minimal 3 karakter!');
-        nameInput.focus();
-        return false;
+        showWarning('Nama minimal 3 karakter!', nameInput);
+        return;
     }
 
     if (!hasChanges()) {
-        e.preventDefault();
-        alert('Tidak ada perubahan data.');
-        return false;
+        Swal.fire({
+            icon: 'info',
+            title: 'Tidak Ada Perubahan',
+            text: 'Data nasabah belum ada yang diubah.',
+            confirmButtonText: 'Oke',
+            confirmButtonColor: '#0d6efd'
+        });
+        return;
     }
 
-    if (!confirm(`Update data nasabah "${name}"?`)) {
-        e.preventDefault();
-        return false;
-    }
-
+    Swal.fire({
+        icon: 'question',
+        title: 'Update Data Nasabah?',
+        text: `Update data nasabah "${name}"?`,
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Update',
+        cancelButtonText: 'Batal',
+        confirmButtonColor: '#0d6efd',
+        cancelButtonColor: '#6c757d'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            editForm.submit();
+        }
+    });
 });
 
-// Reset
-document.querySelector('button[type="reset"]')
-.addEventListener('click', function(e) {
+// Reset form
+resetBtn.addEventListener('click', function(e) {
+    e.preventDefault();
 
-    if (!confirm('Reset form ke data awal?')) {
-        e.preventDefault();
-    }
-
+    Swal.fire({
+        icon: 'question',
+        title: 'Reset Form?',
+        text: 'Reset form ke data awal?',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Reset',
+        cancelButtonText: 'Batal',
+        confirmButtonColor: '#dc3545',
+        cancelButtonColor: '#6c757d'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            editForm.reset();
+        }
+    });
 });
-
-// Warning leave page
-window.addEventListener('beforeunload', function(e) {
-
-    if (hasChanges()) {
-        e.preventDefault();
-        e.returnValue = '';
-    }
-
-});
-
 </script>
 
 @endpush

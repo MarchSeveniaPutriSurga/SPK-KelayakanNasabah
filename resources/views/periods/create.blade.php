@@ -223,25 +223,45 @@ document.getElementById('periodForm').addEventListener('submit', function(e) {
     
     // Confirm before submit
     const monthName = monthNames[parseInt(month)];
-    if (!confirm(`Buat periode untuk ${monthName} ${year}?`)) {
-        e.preventDefault();
-        return false;
-    }
+
+    e.preventDefault();
+
+    Swal.fire({
+        icon: 'question',
+        title: 'Buat Periode?',
+        text: `Buat periode untuk ${monthName} ${year}?`,
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Buat',
+        cancelButtonText: 'Batal',
+        confirmButtonColor: '#0d6efd',
+        cancelButtonColor: '#6c757d'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            this.submit();
+        }
+    });
 });
 
 // Reset form handler
 document.querySelector('button[type="reset"]').addEventListener('click', function(e) {
-    if (!confirm('Reset semua input? Data yang dimasukkan akan hilang.')) {
-        e.preventDefault();
-        return false;
-    }
+    e.preventDefault();
 
-    // Reset select & input ke default
-    setTimeout(() => {
-        monthSelect.value = '';
-        yearInput.value = '{{ date("Y") }}';
-        updatePreview();
-    }, 10);
+    Swal.fire({
+        icon: 'question',
+        title: 'Reset Form?',
+        text: 'Reset semua input? Data yang dimasukkan akan hilang.',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Reset',
+        cancelButtonText: 'Batal',
+        confirmButtonColor: '#dc3545',
+        cancelButtonColor: '#6c757d'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            monthSelect.value = '';
+            yearInput.value = '{{ date("Y") }}';
+            updatePreview();
+        }
+    });
 });
 
 // Initialize preview on page load

@@ -378,10 +378,27 @@ document.querySelectorAll('.delete-btn').forEach(btn => {
     btn.addEventListener('click', function() {
         const customerId = this.dataset.id;
         const customerName = this.dataset.name;
-        
-        if (confirm(`Apakah Anda yakin ingin menghapus nasabah "${customerName}"?\n\nTindakan ini tidak dapat dibatalkan!`)) {
-            document.getElementById(`delete-form-${customerId}`).submit();
-        }
+
+        Swal.fire({
+            icon: 'warning',
+            title: 'Hapus Nasabah?',
+            html: `
+                <div style="text-align:left">
+                    <p>Apakah Anda yakin ingin menghapus nasabah ini?</p>
+                    <p class="mb-1"><strong>Nama:</strong> ${customerName}</p>
+                    <small class="text-danger">Tindakan ini tidak dapat dibatalkan!</small>
+                </div>
+            `,
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Hapus',
+            cancelButtonText: 'Batal',
+            confirmButtonColor: '#dc3545',
+            cancelButtonColor: '#6c757d'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById(`delete-form-${customerId}`).submit();
+            }
+        });
     });
 });
 </script>

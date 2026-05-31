@@ -103,10 +103,27 @@
     </form>
 </div>
 
+<style>
+    .icon-circle {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f59e0b, #ef4444);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+</style>
+
 @push('scripts')
 <script>
 const minInput = document.getElementById('minInput');
 const maxInput = document.getElementById('maxInput');
+const editForm = document.getElementById('editForm');
+const scoreSelect = document.querySelector('select[name="score"]');
+const resetBtn = document.querySelector('button[type="reset"]');
 
 // format angka (aman dari decimal)
 function formatNumber(value) {
@@ -134,6 +151,32 @@ window.addEventListener('load', function () {
 });
 
 const criterionSelect = document.querySelector('select[name="criterion_id"]');
+const originalCriterion = criterionSelect.value;
+const originalMin = minInput.value;
+const originalMax = maxInput.value;
+const originalScore = scoreSelect.value;
+
+function hasChanges() {
+    return criterionSelect.value !== originalCriterion ||
+           cleanNumber(minInput.value) !== cleanNumber(originalMin) ||
+           cleanNumber(maxInput.value) !== cleanNumber(originalMax) ||
+           scoreSelect.value !== originalScore;
+}
+
+function showWarning(message, input = null) {
+    Swal.fire({
+        icon: 'warning',
+        title: 'Perhatian',
+        text: message,
+        confirmButtonText: 'Oke',
+        confirmButtonColor: '#f59e0b'
+    }).then(() => {
+        if (input) {
+            input.focus();
+        }
+    });
+}
+
 const criterionTypeInfo = document.getElementById('criterionTypeInfo');
 const criterionTypeText = document.getElementById('criterionTypeText');
 const criterionTypeDesc = document.getElementById('criterionTypeDesc');
@@ -161,41 +204,87 @@ criterionSelect.addEventListener('change', updateCriterionTypeInfo);
 window.addEventListener('load', updateCriterionTypeInfo);
 
 // submit
-document.getElementById('editForm').addEventListener('submit', function(e) {
+editForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+
     const min = parseInt(cleanNumber(minInput.value));
     const max = parseInt(cleanNumber(maxInput.value));
+    const criterionText = criterionSelect.options[criterionSelect.selectedIndex].text;
+    const score = scoreSelect.value;
 
     if (isNaN(min) || isNaN(max)) {
-        e.preventDefault();
-        alert('Nilai harus berupa angka');
+        showWarning('Nilai minimum dan maksimum harus berupa angka!', minInput);
         return;
     }
 
     if (min > max) {
-        e.preventDefault();
-        alert('Nilai minimum tidak boleh lebih besar dari maksimum');
+        showWarning('Nilai minimum tidak boleh lebih besar dari maksimum!', minInput);
         return;
     }
 
-    // kirim ke backend angka bersih
-    minInput.value = cleanNumber(minInput.value);
-    maxInput.value = cleanNumber(maxInput.value);
+    if (!hasChanges()) {
+        Swal.fire({
+            icon: 'info',
+            title: 'Tidak Ada Perubahan',
+            text: 'Tidak ada perubahan data yang dilakukan.',
+            confirmButtonText: 'Oke',
+            confirmButtonColor: '#0d6efd'
+        });
+        return;
+    }
+
+    Swal.fire({
+        icon: 'question',
+        title: 'Update Parameter?',
+        html: `
+            <div style="text-align:left">
+                <p>Apakah Anda yakin ingin mengupdate parameter scoring ini?</p>
+                <hr>
+                <p class="mb-1"><strong>Kriteria:</strong> ${criterionText}</p>
+                <p class="mb-1"><strong>Rentang:</strong> ${minInput.value} - ${maxInput.value}</p>
+                <p class="mb-1"><strong>Skor:</strong> ${score}</p>
+            </div>
+        `,
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Update',
+        cancelButtonText: 'Batal',
+        confirmButtonColor: '#0d6efd',
+        cancelButtonColor: '#6c757d'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            minInput.value = cleanNumber(minInput.value);
+            maxInput.value = cleanNumber(maxInput.value);
+
+            editForm.submit();
+        }
+    });
+});
+
+// reser form
+resetBtn.addEventListener('click', function(e) {
+    e.preventDefault();
+
+    Swal.fire({
+        icon: 'question',
+        title: 'Reset Form?',
+        text: 'Reset form ke data awal?',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Reset',
+        cancelButtonText: 'Batal',
+        confirmButtonColor: '#dc3545',
+        cancelButtonColor: '#6c757d'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            criterionSelect.value = originalCriterion;
+            minInput.value = formatNumber(originalMin);
+            maxInput.value = formatNumber(originalMax);
+            scoreSelect.value = originalScore;
+
+            updateCriterionTypeInfo();
+        }
+    });
 });
 </script>
-
-<style>
-    .icon-circle {
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #f59e0b, #ef4444);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-}
-</style>
 @endpush
 
 @endsection
