@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Customer;
+use App\Models\Evaluation;
 use Illuminate\Http\Request;
 
 class CustomerController extends Controller
@@ -75,7 +76,18 @@ class CustomerController extends Controller
 
     public function destroy($id)
     {
-        Customer::findOrFail($id)->delete();
-        return redirect()->route('customers.index')->with('success', 'Nasabah berhasil dihapus.');
+        $customer = Customer::findOrFail($id);
+
+        $isUsed = Evaluation::where('customer_id', $id)->exists();
+
+        if ($isUsed) {
+            return redirect()->route('customers.index')
+                ->with('error', 'Nasabah tidak dapat dihapus karena sudah digunakan dalam penilaian!');
+        }
+
+        $customer->delete();
+
+        return redirect()->route('customers.index')
+            ->with('success', 'Nasabah berhasil dihapus.');
     }
 }

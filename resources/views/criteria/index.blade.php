@@ -145,8 +145,25 @@
                 </thead>
                 <tbody>
                     @foreach($criteria as $c)
-                    @php
+                    {{-- @php
                         $isUsed = \App\Models\Evaluation::where('criterion_id', $c->id)->exists();
+                        $usageCount = \App\Models\Evaluation::where('criterion_id', $c->id)->count();
+                    @endphp --}}
+                    @php
+                        // Untuk tombol edit, cek apakah kriteria dipakai di periode aktif
+                        $activePeriod = \App\Models\Period::where('is_active', true)->first();
+
+                        $isUsedInActivePeriod = false;
+
+                        if ($activePeriod) {
+                            $isUsedInActivePeriod = \App\Models\Evaluation::where('period_id', $activePeriod->id)
+                                ->where('criterion_id', $c->id)
+                                ->exists();
+                        }
+
+                        // Untuk tombol hapus, cek apakah kriteria pernah dipakai di penilaian mana pun
+                        $isUsedAnywhere = \App\Models\Evaluation::where('criterion_id', $c->id)->exists();
+
                         $usageCount = \App\Models\Evaluation::where('criterion_id', $c->id)->count();
                     @endphp
                     <tr class="criterion-row">
@@ -176,7 +193,7 @@
                             </span>
                         </td>
                         <td class="text-center">
-                            @if($isUsed)
+                            @if($isUsedAnywhere)
                                 <span class="badge bg-info-subtle text-info" title="Kriteria sudah digunakan dalam {{ $usageCount }} penilaian">
                                     <i class="fa-solid fa-lock me-1"></i>Digunakan
                                 </span>
@@ -188,12 +205,25 @@
                         </td>
                         <td class="text-center">
                             <div class="d-flex gap-2 justify-content-center">
-                                <a href="{{ route('criteria.edit', $c->id) }}"
-                                class="btn btn-sm btn-outline-warning rounded"
-                                title="Edit Kriteria">
-                                    <i class="fa-solid fa-pen"></i>
-                                </a>
-                                @if($isUsed)
+
+                                {{-- Tombol Edit --}}
+                                @if($isUsedInActivePeriod)
+                                    <button type="button"
+                                            class="btn btn-sm btn-outline-secondary rounded"
+                                            disabled
+                                            title="Tidak dapat diedit karena periode aktif sudah ada penilaian">
+                                        <i class="fa-solid fa-lock"></i>
+                                    </button>
+                                @else
+                                    <a href="{{ route('criteria.edit', $c->id) }}"
+                                    class="btn btn-sm btn-outline-warning rounded"
+                                    title="Edit Kriteria">
+                                        <i class="fa-solid fa-pen"></i>
+                                    </a>
+                                @endif
+
+                                {{-- Tombol Hapus --}}
+                                @if($isUsedAnywhere)
                                     <button type="button"
                                             class="btn btn-sm btn-outline-secondary rounded"
                                             disabled
@@ -210,9 +240,9 @@
                                         <i class="fa-solid fa-trash"></i>
                                     </button>
                                 @endif
+
                             </div>
 
-                            <!-- Hidden Delete Form -->
                             <form id="delete-form-{{ $c->id }}"
                                 action="{{ route('criteria.destroy', $c->id) }}"
                                 method="post"

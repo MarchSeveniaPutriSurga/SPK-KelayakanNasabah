@@ -130,9 +130,19 @@
                                         <i class="fa-solid fa-trash"></i>
                                     </button>
                                 @else
-                                    <span class="badge bg-light text-muted" title="Sudah memiliki penilaian">
-                                        <i class="fa-solid fa-lock me-1"></i>Terkunci
-                                    </span>
+                                    <button type="button"
+                                            class="btn btn-sm btn-outline-secondary rounded"
+                                            disabled
+                                            title="Tidak dapat diedit karena periode sudah memiliki penilaian">
+                                        <i class="fa-solid fa-lock"></i>
+                                    </button>
+
+                                    <button type="button"
+                                            class="btn btn-sm btn-outline-secondary rounded"
+                                            disabled
+                                            title="Tidak dapat dihapus karena periode sudah memiliki penilaian">
+                                        <i class="fa-solid fa-lock"></i>
+                                    </button>
                                 @endif
                             </div>
 

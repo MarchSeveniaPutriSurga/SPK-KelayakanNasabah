@@ -182,6 +182,20 @@ document.getElementById('editForm').addEventListener('submit', function(e) {
     maxInput.value = cleanNumber(maxInput.value);
 });
 </script>
+
+<style>
+    .icon-circle {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f59e0b, #ef4444);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+</style>
 @endpush
 
 @endsection

@@ -11,7 +11,7 @@
     </div>
 
     <!-- Filter Periode -->
-    <div class="alert alert-primary d-flex align-items-center mb-4">
+    {{-- <div class="alert alert-primary d-flex align-items-center mb-4">
     <i class="fa-solid fa-calendar-check fs-4 me-3"></i>
     <div>
         <strong>Periode Aktif:</strong> 
@@ -28,7 +28,7 @@
                 <p class="text-muted">Silakan pilih periode terlebih dahulu untuk mulai melakukan penilaian nasabah</p>
             </div>
         </div>
-    @endif
+    @endif --}}
 
     @if($selected)
         <!-- Info Periode -->

@@ -34,8 +34,6 @@
     <div class="alert alert-warning d-flex align-items-center mb-4">
         <i class="fa-solid fa-triangle-exclamation fs-4 me-3"></i>
         <div>
-            <strong>Perhatian:</strong> Kode kriteria tidak dapat diubah untuk menjaga konsistensi data.
-            <br>
             <small>Perubahan kriteria tidak dapat dilakukan jika sudah digunakan dalam sebuah periode, buat periode baru untuk melakukan perubahan.</small>
         </div>
     </div>
@@ -124,33 +122,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- Help Box -->
-        <div class="mt-4">
-            <div class="help-box">
-                <h6 class="mb-2"><i class="fa-solid fa-circle-info me-2"></i>Panduan Jenis Kriteria:</h6>
-                <div class="row g-2">
-                    <div class="col-md-6">
-                        <div class="help-item benefit">
-                            <i class="fa-solid fa-arrow-trend-up me-2"></i>
-                            <div>
-                                <strong>Benefit</strong>
-                                <small class="d-block">Contoh: Pendapatan, Aset, Nilai Kredit, Loyalitas</small>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="help-item cost">
-                            <i class="fa-solid fa-arrow-trend-down me-2"></i>
-                            <div>
-                                <strong>Cost</strong>
-                                <small class="d-block">Contoh: Hutang, Resiko, Tunggakan, Biaya</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
     </form>
 </div>
 
@@ -198,43 +169,6 @@
 .form-text {
     font-size: 0.875rem;
     margin-top: 0.5rem;
-}
-
-/* Help Box */
-.help-box {
-    background: #f8f9fa;
-    border-radius: 12px;
-    padding: 1.5rem;
-    border: 1px solid #e9ecef;
-}
-
-.help-item {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 1rem;
-    border-radius: 8px;
-    background: white;
-}
-
-.help-item.benefit {
-    border-left: 4px solid #198754;
-}
-
-.help-item.cost {
-    border-left: 4px solid #dc3545;
-}
-
-.help-item i {
-    font-size: 1.5rem;
-}
-
-.help-item.benefit i {
-    color: #198754;
-}
-
-.help-item.cost i {
-    color: #dc3545;
 }
 
 /* Buttons */

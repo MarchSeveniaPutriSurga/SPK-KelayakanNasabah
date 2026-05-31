@@ -77,6 +77,9 @@
                 </thead>
                 <tbody>
                     @foreach($customers as $index => $c)
+                    @php
+                        $isUsed = \App\Models\Evaluation::where('customer_id', $c->id)->exists();
+                    @endphp
                     <tr class="customer-row" data-name="{{ strtolower($c->name) }}" data-identifier="{{ strtolower($c->identifier ?? '') }}" data-phone="{{ $c->phone ?? '' }}">
                         <td class="text-center">
                             <div class="number-badge">{{ $index + 1 }}</div>
@@ -122,13 +125,22 @@
                                     <i class="fa-solid fa-pen"></i>
                                 </a>
 
-                                <button type="button"
-                                        class="btn btn-sm btn-outline-danger rounded delete-btn"
-                                        data-id="{{ $c->id }}"
-                                        data-name="{{ $c->name }}"
-                                        title="Hapus Nasabah">
-                                    <i class="fa-solid fa-trash"></i>
-                                </button>
+                                @if($isUsed)
+                                    <button type="button"
+                                            class="btn btn-sm btn-outline-secondary rounded"
+                                            disabled
+                                            title="Tidak dapat dihapus karena nasabah sudah digunakan dalam penilaian">
+                                        <i class="fa-solid fa-lock"></i>
+                                    </button>
+                                @else
+                                    <button type="button"
+                                            class="btn btn-sm btn-outline-danger rounded delete-btn"
+                                            data-id="{{ $c->id }}"
+                                            data-name="{{ $c->name }}"
+                                            title="Hapus Nasabah">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                @endif
                             </div>
 
                             <!-- Hidden Delete Form -->
