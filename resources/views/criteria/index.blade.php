@@ -27,6 +27,7 @@
         <i class="fa-solid fa-info-circle fs-4 me-3"></i>
         <div>
             <strong>Informasi:</strong> Sistem mendukung maksimal 4 kriteria penilaian untuk metode SMART.
+            <br>
             <small>Perubahan kriteria hanya dapat dilakukan jika periode aktif belum memiliki penilaian</small>
         </div>
     </div>
