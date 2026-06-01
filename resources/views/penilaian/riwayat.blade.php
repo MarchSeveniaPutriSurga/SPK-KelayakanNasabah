@@ -75,10 +75,25 @@
                     <th width="200">Nama Nasabah</th>
 
                     @foreach($criteria as $c)
+                        @php
+                            $snapshotWeight = null;
+
+                            foreach ($results as $result) {
+                                if (isset($result['values'][$c->id]['weight_snapshot'])) {
+                                    $snapshotWeight = $result['values'][$c->id]['weight_snapshot'];
+                                    break;
+                                }
+                            }
+
+                            $displayWeight = $snapshotWeight ?? $c->weight;
+                        @endphp
+
                         <th class="text-center">
                             <div class="fw-bold">{{ $c->code }}</div>
                             <small class="text-muted d-block">{{ $c->name }}</small>
-                            <span class="badge bg-secondary mt-1">Bobot: {{ $c->weight }}</span>
+                            <span class="badge bg-secondary mt-1">
+                                Bobot: {{ $displayWeight }}
+                            </span>
                         </th>
                     @endforeach
 

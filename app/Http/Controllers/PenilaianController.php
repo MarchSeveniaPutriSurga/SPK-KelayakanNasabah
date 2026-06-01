@@ -115,6 +115,7 @@ class PenilaianController extends Controller
                     [
                         'real_value' => $clean,
                         'score'      => $score,
+                        'weight_snapshot'  => $criterion->weight,
                         'keuntungan' => $keuntungan,
                         'modal'      => $modal,
                     ]
@@ -152,6 +153,7 @@ class PenilaianController extends Controller
             $data[$ev->customer_id]['values'][$ev->criterion_id] = [
                 'real_value' => $ev->real_value,
                 'score'      => $ev->score,
+                'weight_snapshot' => $ev->weight_snapshot,
                 'keuntungan' => $ev->keuntungan,
                 'modal'      => $ev->modal,
             ];
@@ -190,7 +192,14 @@ class PenilaianController extends Controller
                     $utility = ($raw - $minVal) / ($maxVal - $minVal);
                 }
 
-                $weighted = $utility * $criterion->weight;
+
+                $weight = $row['values'][$criterion->id]['weight_snapshot'];
+
+                if ($weight === null) {
+                    $weight = $criterion->weight;
+                }
+
+                $weighted = $utility * $weight;
 
                 $total += $weighted;
             }

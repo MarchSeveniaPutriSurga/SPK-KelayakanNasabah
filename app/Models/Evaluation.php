@@ -12,6 +12,7 @@ class Evaluation extends Model
         'criterion_id',
         'real_value',
         'score',
+        'weight_snapshot',
         'keuntungan',
         'modal'
     ];

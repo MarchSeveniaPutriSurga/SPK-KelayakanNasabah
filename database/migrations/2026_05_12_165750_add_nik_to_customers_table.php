@@ -11,11 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('customers', function (Blueprint $table) {
-            $table->string('nik', 16)
-                ->unique()
-                ->after('name');
-        });
+        if (!Schema::hasColumn('customers', 'nik')) {
+            Schema::table('customers', function (Blueprint $table) {
+                $table->string('nik', 16)
+                    ->unique()
+                    ->after('name');
+            });
+        }
     }
 
     /**
@@ -23,8 +25,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('customers', function (Blueprint $table) {
-            //
-        });
+        if (Schema::hasColumn('customers', 'nik')) {
+            Schema::table('customers', function (Blueprint $table) {
+                $table->dropColumn('nik');
+            });
+        }
     }
 };
