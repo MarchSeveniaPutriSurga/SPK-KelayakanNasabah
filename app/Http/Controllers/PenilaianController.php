@@ -184,15 +184,10 @@ class PenilaianController extends Controller
                 $maxVal = count($columnValues) > 0 ? max($columnValues) : 0;
 
                 // Jika semua nilai sama, supaya tidak error pembagian 0
-                if ($maxVal == $minVal) {
-                    $utility = 1;
+                if (($maxVal - $minVal) == 0) {
+                    $utility = $raw > 0 ? 1 : 0;
                 } else {
-                    if ($criterion->type === 'benefit') {
-                        $utility = ($raw - $minVal) / ($maxVal - $minVal);
-                    } else {
-                        // cost
-                        $utility = ($maxVal - $raw) / ($maxVal - $minVal);
-                    }
+                    $utility = ($raw - $minVal) / ($maxVal - $minVal);
                 }
 
                 $weighted = $utility * $criterion->weight;
