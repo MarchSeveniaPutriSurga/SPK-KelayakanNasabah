@@ -90,7 +90,7 @@
 
                         <th class="text-center">
                             <div class="fw-bold">{{ $c->code }}</div>
-                            <small class="text-muted d-block">{{ $c->name }}</small>
+                            {{-- <small class="text-muted d-block">{{ $c->name }}</small> --}}
                             <span class="badge bg-secondary mt-1">
                                 Bobot: {{ $displayWeight }}
                             </span>
