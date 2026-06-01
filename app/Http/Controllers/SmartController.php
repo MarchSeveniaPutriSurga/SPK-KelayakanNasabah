@@ -60,10 +60,8 @@ class SmartController extends Controller
         $customerIds = $evaluations->pluck('customer_id')->unique();
         $customers   = Customer::whereIn('id', $customerIds)->get();
 
-        // =====================================================
         // 1. BUILD MATRIX BERDASARKAN SCORE 1-5
-        // =====================================================
-        // Di sistem kamu, score sudah hasil konversi parameter scoring.
+        // Di sistem, score sudah hasil konversi parameter scoring.
         // Contoh:
         // - Cost: nilai kecil bisa dapat score tinggi.
         // - Benefit: nilai besar bisa dapat score tinggi.
