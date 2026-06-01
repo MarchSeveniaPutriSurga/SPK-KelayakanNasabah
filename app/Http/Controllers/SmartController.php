@@ -168,7 +168,8 @@ class SmartController extends Controller
 
             $ratio = $maxScore > 0 ? $r['total'] / $maxScore : 0;
 
-            $r['rekomendasi'] = round($ratio * $pengajuan);
+            // $r['rekomendasi'] = round($ratio * $pengajuan);
+            $r['rekomendasi'] = (int) round(($ratio * $pengajuan) / 100000) * 100000;
         }
         unset($r);
 

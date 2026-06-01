@@ -231,7 +231,8 @@ class PenilaianController extends Controller
             // Rekomendasi pencairan proporsional berdasarkan nilai SMART
             $ratio = $maxScore > 0 ? $r['smart_score'] / $maxScore : 0;
 
-            $r['rekomendasi'] = round($ratio * $pengajuan);
+            // $r['rekomendasi'] = round($ratio * $pengajuan);
+            $r['rekomendasi'] = (int) round(($ratio * $pengajuan) / 100000) * 100000;
         }
 
         return view('penilaian.riwayat', compact(
