@@ -6,6 +6,7 @@ use App\Models\Customer;
 use App\Models\Criterion;
 use App\Models\Evaluation;
 use App\Models\Period;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -31,6 +32,23 @@ class DashboardController extends Controller
         $totalAssessments  = Evaluation::count();
         $totalWeight       = Criterion::sum('weight');
 
+        // Data peminjaman per bulan untuk line chart
+        $currentYear = now()->year;
+
+        $loanData = Customer::selectRaw('MONTH(created_at) as month, COUNT(*) as total')
+            ->whereYear('created_at', $currentYear)
+            ->groupBy('month')
+            ->pluck('total', 'month')
+            ->toArray();
+
+        $loanLineLabels = [];
+        $loanLineValues = [];
+
+        for ($i = 1; $i <= 12; $i++) {
+            $loanLineLabels[] = Carbon::create()->month($i)->translatedFormat('F');
+            $loanLineValues[] = $loanData[$i] ?? 0;
+        }
+
         if (!$selectedPeriod) {
             return view('dashboard.index', [
                 'periods'          => $periods,
@@ -53,6 +71,9 @@ class DashboardController extends Controller
                 'criteriaLabels'   => [],
                 'criteriaAvgScores' => [],
                 'assessedCustomers' => 0,
+                //Data line chart peminjam
+                'loanLineLabels' => $loanLineLabels,
+                'loanLineValues' => $loanLineValues,
             ])->with('error', 'Belum ada periode aktif atau belum dipilih.');
         }
 
@@ -83,6 +104,9 @@ class DashboardController extends Controller
                 'criteriaLabels'   => [],
                 'criteriaAvgScores' => [],
                 'assessedCustomers' => 0,
+                //Data line chart peminjam
+                'loanLineLabels' => $loanLineLabels,
+                'loanLineValues' => $loanLineValues,
             ])->with('info', 'Belum ada penilaian pada periode ini.');
         }
 
@@ -215,6 +239,9 @@ class DashboardController extends Controller
             'criteriaLabels'   => $criteriaLabels,
             'criteriaAvgScores' => $criteriaAvgScores,
             'assessedCustomers' => $assessedCustomers,
+            // Data line chart peminjaman
+            'loanLineLabels' => $loanLineLabels,
+            'loanLineValues' => $loanLineValues,
         ]);
     }
 }

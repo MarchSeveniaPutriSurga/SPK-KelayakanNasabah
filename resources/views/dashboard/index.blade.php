@@ -181,29 +181,29 @@
             </div>
         </div>
 
-        <!-- Bar Chart - Rata-rata Skor per Kriteria -->
+        <!-- Line Chart - Data Peminjaman per Bulan -->
         <div class="chart-card">
             <div class="card-header-custom">
                 <div class="header-left">
                     <div class="header-icon">
-                        <i class="fa-solid fa-chart-column"></i>
+                        <i class="fa-solid fa-chart-line"></i>
                     </div>
                     <div>
-                        <h5 class="card-title-custom">Analisis Per Kriteria</h5>
-                        <p class="card-subtitle">Rata-rata skor setiap kriteria penilaian</p>
+                        <h5 class="card-title-custom">Data Peminjaman</h5>
+                        <p class="card-subtitle">Jumlah peminjaman setiap bulan pada tahun {{ now()->year }}</p>
                     </div>
                 </div>
             </div>
             <div class="card-body-custom">
-                @if(isset($criteriaAvgScores) && count($criteriaAvgScores) > 0)
+                @if(isset($loanLineValues) && array_sum($loanLineValues) > 0)
                     <div class="chart-wrapper">
-                        <canvas id="criteriaBarChart"></canvas>
+                        <canvas id="loanLineChart"></canvas>
                     </div>
                 @else
                     <div class="empty-state">
-                        <i class="fa-solid fa-chart-column"></i>
+                        <i class="fa-solid fa-chart-line"></i>
                         <h6>Belum Ada Data</h6>
-                        <p>Pilih periode untuk melihat analisis kriteria</p>
+                        <p>Belum ada data peminjaman pada tahun ini</p>
                     </div>
                 @endif
             </div>
@@ -414,21 +414,27 @@ if (donutCtx) {
 }
 @endif
 
-// Bar Chart - Rata-rata per Kriteria
-@if(isset($criteriaAvgScores) && count($criteriaAvgScores) > 0)
-const barCtx = document.getElementById('criteriaBarChart');
-if (barCtx) {
-    new Chart(barCtx, {
-        type: 'bar',
+// Line Chart - Data Peminjaman per Bulan
+@if(isset($loanLineValues) && array_sum($loanLineValues) > 0)
+const loanCtx = document.getElementById('loanLineChart');
+if (loanCtx) {
+    new Chart(loanCtx, {
+        type: 'line',
         data: {
-            labels: {!! json_encode($criteriaLabels) !!},
+            labels: {!! json_encode($loanLineLabels) !!},
             datasets: [{
-                label: 'Rata-rata Skor',
-                data: {!! json_encode($criteriaAvgScores) !!},
-                backgroundColor: 'rgba(88, 180, 204, 0.8)',
+                label: 'Jumlah Peminjaman',
+                data: {!! json_encode($loanLineValues) !!},
+                backgroundColor: 'rgba(88, 180, 204, 0.15)',
                 borderColor: 'rgba(88, 180, 204, 1)',
-                borderWidth: 2,
-                borderRadius: 8,
+                borderWidth: 3,
+                tension: 0.4,
+                fill: true,
+                pointBackgroundColor: 'rgba(88, 180, 204, 1)',
+                pointBorderColor: '#ffffff',
+                pointBorderWidth: 2,
+                pointRadius: 5,
+                pointHoverRadius: 7,
             }]
         },
         options: {
@@ -441,7 +447,7 @@ if (barCtx) {
                 tooltip: {
                     callbacks: {
                         label: function(context) {
-                            return 'Rata-rata: ' + context.parsed.y.toFixed(2);
+                            return 'Jumlah peminjaman: ' + context.parsed.y;
                         }
                     }
                 }
@@ -449,6 +455,9 @@ if (barCtx) {
             scales: {
                 y: {
                     beginAtZero: true,
+                    ticks: {
+                        precision: 0
+                    },
                     grid: {
                         color: 'rgba(0, 0, 0, 0.05)'
                     }
