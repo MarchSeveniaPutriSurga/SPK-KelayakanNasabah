@@ -117,8 +117,10 @@ class DashboardController extends Controller
         $customerIds = $evaluations->pluck('customer_id')->unique()->toArray();
         $customers = Customer::whereIn('id', $customerIds)->get()->keyBy('id');
 
-        // Matriks nilai
+        // Matriks nilai dan bobot
         $scoreMatrix = [];
+        $weightMatrix = [];
+
         foreach ($customerIds as $cid) {
             foreach ($criteria as $c) {
                 $ev = $evaluations
@@ -127,38 +129,48 @@ class DashboardController extends Controller
                     ->first();
 
                 $scoreMatrix[$cid][$c->id] = $ev ? (int) $ev->score : 0;
+
+                // Pakai bobot snapshot jika ada, kalau belum ada pakai bobot terbaru
+                $weightMatrix[$cid][$c->id] = $ev && $ev->weight_snapshot !== null
+                    ? (float) $ev->weight_snapshot
+                    : (float) $c->weight;
             }
         }
 
-        // Normalisasi
+        // Normalisasi nilai
         $normFactor = [];
+
         foreach ($criteria as $c) {
             $col = array_column($scoreMatrix, $c->id);
+
             $normFactor[$c->id] = [
                 'max' => max($col),
-                'min' => min($col)
+                'min' => min($col),
             ];
         }
 
         // Hitung skor total SMART
         $results = [];
+
         foreach ($scoreMatrix as $cid => $rows) {
             $total = 0;
 
             foreach ($criteria as $c) {
                 $raw = $rows[$c->id];
 
-                if ($c->type === 'benefit') {
-                    $norm = ($normFactor[$c->id]['max'] > 0)
-                        ? $raw / $normFactor[$c->id]['max']
-                        : 0;
+                $max = $normFactor[$c->id]['max'];
+                $min = $normFactor[$c->id]['min'];
+
+                // Rumus normalisasi benefit semua
+                if (($max - $min) == 0) {
+                    $norm = $raw > 0 ? 1 : 0;
                 } else {
-                    $norm = ($raw > 0)
-                        ? $normFactor[$c->id]['min'] / $raw
-                        : 0;
+                    $norm = ($raw - $min) / ($max - $min);
                 }
 
-                $total += $norm * $c->weight;
+                $weight = $weightMatrix[$cid][$c->id];
+
+                $total += $norm * $weight;
             }
 
             $results[] = [
