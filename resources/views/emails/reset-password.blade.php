@@ -21,7 +21,7 @@
             >
 
             <h2 style="margin: 15px 0 5px; color: #8ec7d6;">
-                SPK Penentuan Kelayakan Nasabah
+                SPK Kelayakan Nasabah
             </h2>
 
             <p style="margin: 0; color: #777;">
@@ -110,7 +110,7 @@
             color: #777;
             font-size: 12px;
         ">
-            SPK Penentuan Kelayakan Nasabah<br>
+            SPK Kelayakan Nasabah<br>
             BUMKalma Mitra Lestari
         </div>
 
