@@ -65,8 +65,8 @@ Route::post('/reset-password', function (Request $request) {
 
     if ($status === Password::PASSWORD_RESET) {
         return redirect()
-            ->route('login')
-            ->with('success', 'Password berhasil direset. Silakan login dengan password baru.');
+            ->route('profile.index')
+            ->with('success', 'Password berhasil diubah.');
     }
 
     return back()->withErrors([
