@@ -96,17 +96,25 @@
       </a>
     </li>
 
-    {{-- AKUN --}}
+    {{-- AKUN --}}  
     <li class="sidebar-group-label">Akun</li>
 
     <li>
-      <form method="POST" action="{{ route('logout') }}">
-        @csrf
-        <button type="submit">
-          <i class="fa-solid fa-arrow-right-from-bracket"></i>
-          <span>Logout</span>
-        </button>
-      </form>
+        <a href="{{ route('profile.index') }}"
+          class="{{ Request::routeIs('profile.index') ? 'active' : '' }}">
+            <i class="fa-solid fa-user"></i>
+            <span>Profil</span>
+        </a>
+    </li>
+
+    <li>
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <button type="submit">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                <span>Logout</span>
+            </button>
+        </form>
     </li>
 
   </ul>

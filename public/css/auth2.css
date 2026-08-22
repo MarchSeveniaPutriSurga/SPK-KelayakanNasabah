@@ -394,6 +394,30 @@ body {
     border-radius: 10px;
 }
 
+.server-success {
+    margin-top: 18px;
+    text-align: center;
+    color: rgb(218, 215, 215);
+    font-size: 14px;
+}
+
+.forgot-password {
+    text-align: right;
+    margin-top: -5px;
+    margin-bottom: 5px;
+}
+
+.forgot-password a {
+    color: rgb(218, 215, 215);
+    font-size: 14px;
+    text-decoration: none;
+    transition: 0.2s ease;
+}
+
+.forgot-password a:hover {
+    text-decoration: underline;
+}
+
 /* Animasi */
 @keyframes fadeInUp {
     from {

@@ -65,10 +65,22 @@
                     <span class="error-message" id="passwordError"></span>
                 </div>
 
+                <div class="forgot-password">
+                    <a href="{{ route('password.request') }}">
+                        Lupa Password?
+                    </a>
+                </div>
+
                 <button type="submit" class="neu-button">
                     Masuk
                 </button>
             </form>
+
+            @if (session('success'))
+                <p class="server-success">
+                    {{ session('success') }}
+                </p>
+            @endif
 
             @if ($errors->any())
                 <p class="server-error">{{ $errors->first() }}</p>
