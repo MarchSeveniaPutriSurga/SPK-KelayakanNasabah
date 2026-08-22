@@ -85,10 +85,9 @@
 
                    <hr class="my-4">
 
-                    <div class="mb-3 text-center">
+                    <div class="mb-3 text-end">
                         <a href="{{ route('profile.password.forgot') }}"
                         class="text-decoration-none small">
-                            <i class="fa-solid fa-key me-1"></i>
                             Lupa password saat ini?
                         </a>
                     </div>
