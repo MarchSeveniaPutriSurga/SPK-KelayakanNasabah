@@ -36,6 +36,8 @@ Route::get('/reset-password/{token}', function (string $token) {
     ]);
 })->name('password.reset');
 
+Route::get('/profile/reset-password/{token}', [ForgotPasswordController::class, 'showDashboardResetPassword'])->name('profile.password.reset');
+
 Route::post('/reset-password', function (Request $request) {
 
     $request->validate([
@@ -88,6 +90,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/profil/email', [ProfileController::class, 'editEmail'])->name('profile.email.edit');
 
     Route::put('/profil/email', [ProfileController::class, 'updateEmail'])->name('profile.email.update');
+
+    Route::get('/profile/forgot-password', [ForgotPasswordController::class, 'showDashboardForgotPassword'])->name('profile.password.forgot');
+
+    Route::post('/profile/forgot-password', [ForgotPasswordController::class, 'sendDashboardResetLink'])->name('profile.password.email');
 
     // Criteria
     Route::resource('criteria', CriterionController::class);

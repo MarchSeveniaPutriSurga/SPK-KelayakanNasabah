@@ -83,15 +83,24 @@
                                required>
                     </div>
 
-                    <hr class="my-4">
+                   <hr class="my-4">
+
+                    <div class="mb-3 text-center">
+                        <a href="{{ route('profile.password.forgot') }}"
+                        class="text-decoration-none small">
+                            <i class="fa-solid fa-key me-1"></i>
+                            Lupa password saat ini?
+                        </a>
+                    </div>
 
                     <div class="d-flex gap-2">
                         <button type="submit" class="btn btn-primary">
-                            <i class="fa-solid fa-floppy-disk me-2"></i>Simpan Perubahan
+                            <i class="fa-solid fa-floppy-disk me-2"></i>
+                            Simpan Perubahan
                         </button>
 
                         <a href="{{ route('profile.index') }}"
-                           class="btn btn-outline-secondary">
+                        class="btn btn-outline-secondary">
                             Batal
                         </a>
                     </div>

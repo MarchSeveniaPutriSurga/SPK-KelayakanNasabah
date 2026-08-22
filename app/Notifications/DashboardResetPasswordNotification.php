@@ -6,25 +6,25 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class CustomResetPassword extends Notification
+class DashboardResetPasswordNotification extends Notification
 {
     use Queueable;
 
-    protected string $token;
+    protected $token;
 
-    public function __construct(string $token)
+    public function __construct($token)
     {
         $this->token = $token;
     }
 
-    public function via(object $notifiable): array
+    public function via($notifiable)
     {
         return ['mail'];
     }
 
-    public function toMail(object $notifiable): MailMessage
+    public function toMail($notifiable)
     {
-        $url = url(route('password.reset', [
+        $url = url(route('profile.password.reset', [
             'token' => $this->token,
             'email' => $notifiable->getEmailForPasswordReset(),
         ], false));
